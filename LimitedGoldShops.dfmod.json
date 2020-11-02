@@ -7,13 +7,13 @@
     "ModDescription": "Gives All Shops A Limited Supply Of Gold, Restocked Bi-Weekly.",
     "GUID": "df04bd2f-c676-4abe-9b50-047bdce4f15a",
     "Files": [
-        "Assets/Game/Mods/LimitedGoldShops.cs",
-        "Assets/Game/Mods/LGSMerchantTradeServicePopupWindowReplace.cs",
-        "Assets/Game/Mods/LGSTextTokenHolder.cs",
-        "Assets/Game/Mods/LGSTradeWindowText.cs",
-        "Assets/Game/Mods/LGSMerchantTradeRepairPopupWindowReplace.cs",
-        "Assets/Game/Mods/LGSRegisterTextWindows.cs",
-        "Assets/Game/Mods/LGS_Invest_Popup_Services_Replacer.png",
-        "Assets/Game/Mods/LGS_Invest_Popup_Repair_Replacer.png"
+        "Assets/Game/Mods/LimitedGoldShops/LimitedGoldShops.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LGSMerchantTradeServicePopupWindowReplace.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LGSTextTokenHolder.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LGSTradeWindowText.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LGSMerchantTradeRepairPopupWindowReplace.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LGSRegisterTextWindows.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LGS_Invest_Popup_Services_Replacer.png",
+        "Assets/Game/Mods/LimitedGoldShops/LGS_Invest_Popup_Repair_Replacer.png"
     ]
 }
