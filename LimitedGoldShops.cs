@@ -260,7 +260,7 @@ namespace LimitedGoldShops
                 //Debug.Log("You Just Entered An Open Shop, Good Job!...");
                 ShopData sd;
                 currentGoldSupply = GoldSupplyAmountGenerator(buildingQuality);
-                shopAttitude = UnityEngine.Random.Range(0, 2); // Mostly have it as an int instead of a bool, just incase I want to add more "attitude types" to this later on.
+               shopAttitude = UnityEngine.Random.Range(0, 2); // Mostly have it as an int instead of a bool, just incase I want to add more "attitude types" to this later on.
                 //Debug.Log("Building Attitude Rolled: " + shopAttitude.ToString());
                 FlexCurrentGoldSupply = currentGoldSupply; // On transition, sets the shops gold supply to this "global variable" for later uses.
 
@@ -343,7 +343,7 @@ namespace LimitedGoldShops
             int regionCostAdjust = GameManager.Instance.PlayerEntity.RegionData[currentRegionIndex].PriceAdjustment / 100;
             float varianceMaker = (UnityEngine.Random.Range(1.001f, 2.751f));
 
-            return (int)Mathf.Ceil(((buildingQuality * 6) + (regionCostAdjust + 1)) * ((135 + playerLuck) * varianceMaker));
+            return (int)Mathf.Ceil(((buildingQuality * 2) + (regionCostAdjust + 1)) * ((15 + playerLuck) * varianceMaker));
         }
 
         public static int InvestedGoldSupplyAmountGenerator(int buildingQuality, uint amountInvested, int shopAttitude)

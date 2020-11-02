@@ -231,8 +231,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 				Refresh();
             }
             CloseWindow();
-            if (receivedLetterOfCredit)
-                DaggerfallUI.MessageBox(TextManager.Instance.GetText(textDatabase, "letterOfCredit"));
+          //  if (receivedLetterOfCredit)
+            //    DaggerfallUI.MessageBox(TextManager.Instance.GetText(textDatabase, "letterOfCredit"));
         }
 
         protected void ConfirmPoorTrade_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
@@ -271,8 +271,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 				Refresh();
             }
             CloseWindow();
-            if (receivedLetterOfCredit)
-                DaggerfallUI.MessageBox(TextManager.Instance.GetText(textDatabase, "letterOfCredit"));
+        //    if (receivedLetterOfCredit)
+          //      DaggerfallUI.MessageBox(TextManager.Instance.GetText(textDatabase, "letterOfCredit"));
         }
 
         public void UpdateShopGoldDisplay()
