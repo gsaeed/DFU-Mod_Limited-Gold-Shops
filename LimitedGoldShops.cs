@@ -338,12 +338,19 @@ namespace LimitedGoldShops
         {
             //Debug.Log("A shop without investment was just generated.");
             PlayerEntity player = GameManager.Instance.PlayerEntity;
-            int playerLuck = player.Stats.LiveLuck - 50;
+            int playerLuck = player.Stats.LiveLuck;
             int currentRegionIndex = GameManager.Instance.PlayerGPS.CurrentRegionIndex;
             int regionCostAdjust = GameManager.Instance.PlayerEntity.RegionData[currentRegionIndex].PriceAdjustment / 100;
             float varianceMaker = (UnityEngine.Random.Range(1.001f, 2.751f));
+            int buildingQualityMult = 1;
+            if (buildingQuality >= 20)
+                buildingQualityMult = 5;
+            else if (buildingQuality >= 10)
+                buildingQualityMult = 3;
+            else
+                buildingQualityMult = 1;
 
-            return (int)Mathf.Ceil(((buildingQuality * 2) + (regionCostAdjust + 1)) * ((15 + playerLuck) * varianceMaker));
+            return (int)Mathf.Ceil(((buildingQuality / 10 * buildingQualityMult) + (regionCostAdjust + 1)) * ((playerLuck / 2) * varianceMaker));
         }
 
         public static int InvestedGoldSupplyAmountGenerator(int buildingQuality, uint amountInvested, int shopAttitude)
