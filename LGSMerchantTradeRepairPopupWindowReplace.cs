@@ -79,6 +79,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             // Invest button
             investButton = DaggerfallUI.AddButton(investButtonRect, mainPanel);
+
             //investButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             investButton.OnMouseClick += InvestButton_OnMouseClick;
 
