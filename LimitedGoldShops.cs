@@ -132,7 +132,7 @@ namespace LimitedGoldShops
                 {
                     //Debug.Log("You are buying inside a Temple or a Guild-Hall.");
                 }
-                else if (mode == DaggerfallTradeWindow.WindowModes.Buy)
+                else if (mode == DaggerfallTradeWindow.WindowModes.Buy || mode == DaggerfallTradeWindow.WindowModes.Repair)
                 {
                     currentGoldSupply = sd.CurrentGoldSupply + value;
                     ShopBuildingData.Remove(buildingKey);
