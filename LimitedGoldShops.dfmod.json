@@ -1,10 +1,10 @@
 {
     "ModTitle": "LimitedGoldShops",
-    "ModVersion": "1.00",
+    "ModVersion": "2.0",
     "ModAuthor": "Kirk.O",
     "ContactInfo": "kirkoliveri@gmail.com",
     "DFUnity_Version": "0.10.25",
-    "ModDescription": "Gives All Shops A Limited Supply Of Gold, Restocked Bi-Weekly.",
+    "ModDescription": "Gives All Shops A Limited Supply Of Gold, Restocked Bi-Weekly.  Added Logic for Inventory Filter",
     "GUID": "df04bd2f-c676-4abe-9b50-047bdce4f15a",
     "Files": [
         "Assets/Game/Mods/LimitedGoldShops/LimitedGoldShops.cs",
