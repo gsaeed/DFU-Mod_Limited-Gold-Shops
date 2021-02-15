@@ -16,11 +16,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
     {
         protected static TextLabel localTextLabelOne;
         protected static TextLabel localTextLabelTwo;
+        protected static TextLabel localTextLabelThree;
         protected Button localCloseFilterButton;
         protected bool filterButtonNeedUpdate;
         protected static Button localFilterButton;
         protected static TextBox localFilterTextBox;
         protected static string filterString = null;
+        protected static int createCreditAmt = 0;
         protected static string[] itemGroupNames = new string[]
         {
             "drugs",
@@ -316,14 +318,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
             int goldSupply = 0;
             int shopAttitude = 0; // For now, 0 = Nice Attitude and 1 = Bad Attitude.
+            int creditAmt = 0;
+            bool ignore = true;
             LimitedGoldShops.ShopData sd;
             if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 shopAttitude = sd.ShopAttitude;
+                creditAmt = sd.CurrentCreditSupply;
             }
 
-            if (WindowMode == WindowModes.Sell && goldSupply <= 0)
+            if (WindowMode == WindowModes.Sell && goldSupply <= 0 && !ignore)
             {
                 int buildQual = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality;
                 TextFile.Token[] tokens = LGSTextTokenHolder.ShopTextTokensNice(4);
@@ -372,9 +377,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 TextFile.Token[] tokens = DaggerfallUnity.Instance.TextProvider.CreateTokens(
                     TextFile.Formatting.JustifyCenter,
-                    "I can't afford your offer.",
-                    "Would you be willing to settle",
-                    "for the " + goldSupply.ToString() + " gold that I have left?");
+                    "I can offer " + tradePrice.ToString() +
+                    ".  Would you be willing to take " + goldSupply.ToString() + " in gold and take credit",
+                    "for " + (tradePrice - goldSupply).ToString() + "?");
+
+                createCreditAmt = (tradePrice - goldSupply);
 
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
                 messageBox.SetTextTokens(tokens, this);
@@ -383,7 +390,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 messageBox.OnButtonClick += ConfirmPoorTrade_OnButtonClick;
                 uiManager.PushWindow(messageBox);
             }
-            else if (WindowMode != WindowModes.Sell && WindowMode != WindowModes.SellMagic && PlayerEntity.GetGoldAmount() < tradePrice)
+            else if (WindowMode != WindowModes.Sell && WindowMode != WindowModes.SellMagic && PlayerEntity.GetGoldAmount() + creditAmt < tradePrice)
             {
                 DaggerfallUI.MessageBox(notEnoughGoldId);
             }
@@ -416,21 +423,28 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             LimitedGoldShops.ShopData sd;
             int goldSupply = 0;
             uint investedAmount = 0;
+            int creditAmt = 0;
             if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
+                creditAmt = sd.CurrentCreditSupply;
                 investedAmount = sd.AmountInvested;
+                
             }
 
             if (!(playerEnterExit.BuildingDiscoveryData.buildingType == DFLocation.BuildingTypes.Temple) && !(playerEnterExit.BuildingDiscoveryData.buildingType == DFLocation.BuildingTypes.GuildHall))
             {
-                localTextLabelOne = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(263, 34), string.Empty, NativePanel);
+                localTextLabelOne = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(263, 24), string.Empty, NativePanel);
                 localTextLabelOne.TextScale = 0.85f;
                 localTextLabelOne.Text = "Invested: " + investedAmount.ToString();
 
-                localTextLabelTwo = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(263, 41), string.Empty, NativePanel);
+                localTextLabelTwo = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(263, 31), string.Empty, NativePanel);
                 localTextLabelTwo.TextScale = 0.85f;
                 localTextLabelTwo.Text = "Shop Gold: " + goldSupply.ToString();
+
+                localTextLabelThree = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(263, 38), string.Empty, NativePanel);
+                localTextLabelThree.TextScale = 0.85f;
+                localTextLabelThree.Text = "Credit: " + creditAmt.ToString();
             }
             UpdateShopGoldDisplay();
         }
@@ -513,8 +527,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
             LimitedGoldShops.ShopData sd;
             int goldSupply = 0;
+            int creditAmt = 0;
             if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            {
                 goldSupply = sd.CurrentGoldSupply;
+                creditAmt = sd.CurrentCreditSupply;
+
+            }
 
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
@@ -522,6 +541,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 if (PlayerEntity.CarriedWeight + goldWeight <= PlayerEntity.MaxEncumbrance)
                 {
                     PlayerEntity.GoldPieces += goldSupply;
+                    
                 }
                 else
                 {
@@ -538,7 +558,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 else
                     DaggerfallUI.Instance.PlayOneShot(SoundClips.GoldPieces);
                 PlayerEntity.TallySkill(DFCareer.Skills.Mercantile, 1);
-                LimitedGoldShops.LimitedGoldShops.TradeUpdateShopGold(WindowMode, goldSupply);
+                LimitedGoldShops.LimitedGoldShops.TradeUpdateShopGold(WindowMode, goldSupply, createCreditAmt);
                 UpdateShopGoldDisplay();
 				Refresh();
             }
@@ -555,14 +575,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 LimitedGoldShops.ShopData sd;
                 int goldSupply = 0;
                 uint investedAmount = 0;
+                int creditAmt = 0;
                 if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
                 {
                     goldSupply = sd.CurrentGoldSupply;
                     investedAmount = sd.AmountInvested;
+                    creditAmt = sd.CurrentCreditSupply;
                 }
 
                 localTextLabelOne.Text = "Invested: " + investedAmount.ToString();
                 localTextLabelTwo.Text = "Shop Gold: " + goldSupply.ToString();
+                localTextLabelThree.Text = "Credit: " + creditAmt.ToString();
             }
             catch
             {

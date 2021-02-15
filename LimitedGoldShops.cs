@@ -33,6 +33,7 @@ namespace LimitedGoldShops
         public int ShopAttitude;
         public int BuildingQuality;
         public int CurrentGoldSupply;
+        public int CurrentCreditSupply;
     }
 
     public class LimitedGoldShops : MonoBehaviour, IHasModSaveData
@@ -103,7 +104,7 @@ namespace LimitedGoldShops
             Debug.Log("Finished mod init: LimitedGoldShops");
         }
 
-        public static void TradeUpdateShopGold(DaggerfallTradeWindow.WindowModes mode, int value)
+        public static void TradeUpdateShopGold(DaggerfallTradeWindow.WindowModes mode, int value, int creditAmt = 0)
         {
             ulong creationTime = 0;
             int buildingQuality = 0;
@@ -112,6 +113,7 @@ namespace LimitedGoldShops
             int shopAttitude = 0;
             int buildingKey = 0;
             int currentGoldSupply = 0;
+            int currentCreditAmt = 0;
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
             PlayerEnterExit playerEnterExit = GameManager.Instance.PlayerEnterExit;
 
@@ -126,6 +128,8 @@ namespace LimitedGoldShops
                     amountInvested = sd.AmountInvested;
                     shopAttitude = sd.ShopAttitude;
                     buildingQuality = sd.BuildingQuality;
+                    currentCreditAmt = sd.CurrentCreditSupply;
+
                 }
                 //Debug.LogFormat("Sale Value = {0}", value);
                 if (mode == DaggerfallTradeWindow.WindowModes.Buy && (playerEnterExit.BuildingDiscoveryData.buildingType == DFLocation.BuildingTypes.Temple || playerEnterExit.BuildingDiscoveryData.buildingType == DFLocation.BuildingTypes.GuildHall))
@@ -134,6 +138,24 @@ namespace LimitedGoldShops
                 }
                 else if (mode == DaggerfallTradeWindow.WindowModes.Buy || mode == DaggerfallTradeWindow.WindowModes.Repair)
                 {
+                    if(currentCreditAmt > 0)
+                    {
+                        if (currentCreditAmt >= value)
+                        {
+                            currentCreditAmt -= value;
+                            PlayerEntity pe = GameManager.Instance.PlayerEntity;
+                            pe.GoldPieces += value;
+                            value = 0;
+                        } else
+                        {
+                            value -= currentCreditAmt;
+                            PlayerEntity pe = GameManager.Instance.PlayerEntity;
+                            pe.GoldPieces += currentCreditAmt;
+                            currentCreditAmt = 0;
+                        }
+
+                    } 
+
                     currentGoldSupply = sd.CurrentGoldSupply + value;
                     ShopBuildingData.Remove(buildingKey);
 
@@ -144,14 +166,36 @@ namespace LimitedGoldShops
                         AmountInvested = amountInvested,
                         ShopAttitude = shopAttitude,
                         BuildingQuality = buildingQuality,
-                        CurrentGoldSupply = currentGoldSupply
+                        CurrentGoldSupply = currentGoldSupply,
+                        CurrentCreditSupply = currentCreditAmt,
                     };
                     ShopBuildingData.Add(buildingKey, currentBuildKey);
                 }
                 else
                 {
-                    currentGoldSupply = sd.CurrentGoldSupply - value;
-                    ShopBuildingData.Remove(buildingKey);
+
+                 //   value = value - creditAmt;
+                    currentCreditAmt += creditAmt;
+                    //if (currentCreditAmt > 0)
+                    //{
+                    //    if (currentCreditAmt > value)
+                    //    {
+                    //        currentCreditAmt -= value;
+                    //        value = 0;
+                    //    }
+                    //    else
+                    //    {
+                    //        value -= currentCreditAmt;
+                    //        currentCreditAmt = 0;
+                    //    }
+                    //}
+
+                    if (creditAmt > 0) 
+                        currentGoldSupply = 0;
+                    else
+                        currentGoldSupply = sd.CurrentGoldSupply - value;
+
+                        ShopBuildingData.Remove(buildingKey);
 
                     ShopData currentBuildKey = new ShopData
                     {
@@ -160,7 +204,8 @@ namespace LimitedGoldShops
                         AmountInvested = amountInvested,
                         ShopAttitude = shopAttitude,
                         BuildingQuality = buildingQuality,
-                        CurrentGoldSupply = currentGoldSupply
+                        CurrentGoldSupply = currentGoldSupply,
+                        CurrentCreditSupply = currentCreditAmt,
                     };
                     ShopBuildingData.Add(buildingKey, currentBuildKey);
                 }
@@ -224,7 +269,7 @@ namespace LimitedGoldShops
             foreach (KeyValuePair<int, ShopData> kvp in ShopBuildingData)
             {
                 ulong timeLastVisited = creationTime - kvp.Value.CreationTime;
-                if (!kvp.Value.InvestedIn) // Only deletes expired entries with "OnNewDay" if the "InvestedIn" value inside ShopBuildingData is "false", if the shop has been invested in though, it will not be deleted in this way, only will it be deleted/refreshed when the player enters the expired shop in question, which will generate the gold value based on the amount invested in store, etc.
+                if (!kvp.Value.InvestedIn && kvp.Value.CurrentCreditSupply <=0) // Only deletes expired entries with "OnNewDay" if the "InvestedIn" value inside ShopBuildingData is "false", if the shop has been invested in though, it will not be deleted in this way, only will it be deleted/refreshed when the player enters the expired shop in question, which will generate the gold value based on the amount invested in store, etc.
                 {
                     if (timeLastVisited >= 1296000) // 15 * 86400 = Number of seconds in 15 days.
                     {
@@ -250,6 +295,7 @@ namespace LimitedGoldShops
             int shopAttitude = 0;
             int buildingKey = 0;
             int currentGoldSupply = 0;
+            int creditAmt = 0;
 
             creationTime = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToSeconds();
             buildingQuality = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality;
@@ -273,7 +319,8 @@ namespace LimitedGoldShops
                         AmountInvested = amountInvested,
                         ShopAttitude = shopAttitude,
                         BuildingQuality = buildingQuality,
-                        CurrentGoldSupply = currentGoldSupply
+                        CurrentGoldSupply = currentGoldSupply,
+                        CurrentCreditSupply = 0,
                     };
                     //Debug.Log("Adding building " + buildingKey.ToString() + " - quality: " + buildingQuality.ToString());
                     ShopBuildingData.Add(buildingKey, currentBuildKey);
@@ -293,6 +340,8 @@ namespace LimitedGoldShops
                                 shopAttitude = sd.ShopAttitude;
                                 buildingQuality = sd.BuildingQuality;
                                 currentGoldSupply = InvestedGoldSupplyAmountGenerator(buildingQuality, amountInvested, shopAttitude);
+                                creditAmt = sd.CurrentCreditSupply;
+                                
 
                                 ShopBuildingData.Remove(buildingKey);
                                 //Debug.Log("Removing Expired Invested Shop Gold & Time: " + buildingKey.ToString());
@@ -303,7 +352,8 @@ namespace LimitedGoldShops
                                     AmountInvested = amountInvested,
                                     ShopAttitude = shopAttitude,
                                     BuildingQuality = buildingQuality,
-                                    CurrentGoldSupply = currentGoldSupply
+                                    CurrentGoldSupply = currentGoldSupply,
+                                    CurrentCreditSupply = creditAmt,
                                 };
                                 //Debug.Log("Refreshing building " + buildingKey.ToString() + " - quality: " + buildingQuality.ToString());
                                 ShopBuildingData.Add(buildingKey, currentBuildKey);
@@ -319,7 +369,9 @@ namespace LimitedGoldShops
                                     AmountInvested = amountInvested,
                                     ShopAttitude = shopAttitude,
                                     BuildingQuality = buildingQuality,
-                                    CurrentGoldSupply = currentGoldSupply
+                                    CurrentGoldSupply = currentGoldSupply,
+                                    CurrentCreditSupply = creditAmt,
+
                                 };
                                 //Debug.Log("Adding building " + buildingKey.ToString() + " - quality: " + buildingQuality.ToString());
                                 ShopBuildingData.Add(buildingKey, currentBuildKey);
