@@ -151,12 +151,14 @@ namespace LimitedGoldShops
                             value -= currentCreditAmt;
                             PlayerEntity pe = GameManager.Instance.PlayerEntity;
                             pe.GoldPieces += currentCreditAmt;
+                            currentGoldSupply = sd.CurrentGoldSupply + value;
                             currentCreditAmt = 0;
                         }
 
                     } 
+                    else
+                        currentGoldSupply = sd.CurrentGoldSupply + value;
 
-                    currentGoldSupply = sd.CurrentGoldSupply + value;
                     ShopBuildingData.Remove(buildingKey);
 
                     ShopData currentBuildKey = new ShopData
