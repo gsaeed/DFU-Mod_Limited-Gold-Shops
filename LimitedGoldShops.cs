@@ -129,6 +129,7 @@ namespace LimitedGoldShops
                     shopAttitude = sd.ShopAttitude;
                     buildingQuality = sd.BuildingQuality;
                     currentCreditAmt = sd.CurrentCreditSupply;
+                    currentGoldSupply = sd.CurrentGoldSupply;
 
                 }
                 //Debug.LogFormat("Sale Value = {0}", value);

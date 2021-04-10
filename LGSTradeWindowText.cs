@@ -496,6 +496,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                         remoteItems.Clear();
                         break;
 
+
                     case WindowModes.Buy:
                         DeductGoldAmount(tradePrice);
                         RaiseOnTradeHandler(basketItems.GetNumItems(), tradePrice);
