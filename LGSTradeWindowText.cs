@@ -392,7 +392,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else if (WindowMode != WindowModes.Sell && WindowMode != WindowModes.SellMagic && PlayerEntity.GetGoldAmount() + creditAmt < tradePrice)
             {
-                DaggerfallUI.MessageBox(notEnoughGoldId);
+                DaggerfallUI.MessageBox($"That will cost you {tradePrice}, you do not have enough gold.");
             }
             else
             {
