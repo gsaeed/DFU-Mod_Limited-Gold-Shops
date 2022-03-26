@@ -222,7 +222,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Add items to list
             if (remoteItems != null)
                 for (int i = 0; i < remoteItems.Count; i++)
-                    remoteItemsFiltered.Add(remoteItems.GetItem(i));
+                    if (ItemPassesFilter(remoteItems.GetItem(i)))
+                        remoteItemsFiltered.Add(remoteItems.GetItem(i));
         }
 
         protected bool ItemPassesFilter(DaggerfallUnityItem item)
