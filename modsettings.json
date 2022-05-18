@@ -1,0 +1,29 @@
+{
+    "Version": "1.0",
+    "Sections": [
+        {
+            "Name": "Options",
+            "Description": "Options And Preferences For This Mod.",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Min": 0.05,
+                    "Max": 3.00,
+                    "Value": 1.00,
+                    "Name": "ShopGoldModifier",
+                    "Description": "Default = 1.00 || Modifier For Overall Gold Amount Shops Are Given Upon Generating",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "ShopStandards",
+                    "Description": "Default = 1 || Higher Quality Shops Will Not Buy Low Quality/Value Items, They Have Standards",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                }
+            ],
+            "$version": "v1"
+        }
+    ]
+}

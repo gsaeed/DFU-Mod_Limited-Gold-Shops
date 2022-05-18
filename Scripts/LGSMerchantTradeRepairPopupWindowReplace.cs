@@ -7,7 +7,7 @@ using LimitedGoldShops;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
-    public class LGSMerchantTradeServicePopupWindowReplace : DaggerfallMerchantServicePopupWindow
+    public class LGSMerchantTradeRepairPopupWindowReplace : DaggerfallMerchantRepairPopupWindow
     {
         TextFile.Token[] tokens = null;
         Entity.PlayerEntity player = GameManager.Instance.PlayerEntity;
@@ -21,10 +21,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region UI Rects
 
-        Rect talkButtonRect = new Rect(5, 5, 120, 7);
-        Rect investButtonRect = new Rect(5, 14, 120, 7);
-        Rect serviceButtonRect = new Rect(5, 23, 120, 7);
-        Rect exitButtonRect = new Rect(44, 33, 43, 15);
+        Rect repairButtonRect = new Rect(5, 5, 120, 7);
+        Rect talkButtonRect = new Rect(5, 14, 120, 7);
+        Rect investButtonRect = new Rect(5, 23, 120, 7);
+        Rect sellButtonRect = new Rect(5, 32, 120, 7);
+        Rect exitButtonRect = new Rect(44, 42, 43, 15);
 
         #endregion
 
@@ -36,14 +37,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Fields
 
-        const string baseTextureName = "LGS_Invest_Popup_Services_Replacer";      // Talk / Invest / Sell
+        const string baseTextureName = "LGS_Invest_Popup_Repair_Replacer";      // Repair / Talk / Invest / Sell
 
         #endregion
 
         #region Constructors
 
-        public LGSMerchantTradeServicePopupWindowReplace(IUserInterfaceManager uiManager, StaticNPC npc, Services service)
-            : base(uiManager, npc, service)
+        public LGSMerchantTradeRepairPopupWindowReplace(IUserInterfaceManager uiManager, StaticNPC npc)
+            : base(uiManager, npc)
         {
 
         }
@@ -62,32 +63,37 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mainPanel.VerticalAlignment = VerticalAlignment.Middle;
             mainPanel.BackgroundTexture = baseTexture;
             mainPanel.Position = new Vector2(0, 50);
-            mainPanel.Size = new Vector2(130, 51);
+            mainPanel.Size = new Vector2(130, 60);
+
+            // Repair button
+            repairButton = DaggerfallUI.AddButton(repairButtonRect, mainPanel);
+            //repairButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
+            repairButton.OnMouseClick += RepairButton_OnMouseClick;
+            repairButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.MerchantRepair);
 
             // Talk button
             talkButton = DaggerfallUI.AddButton(talkButtonRect, mainPanel);
             //talkButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             talkButton.OnMouseClick += TalkButton_OnMouseClick;
+            talkButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.MerchantTalk);
 
             // Invest button
             investButton = DaggerfallUI.AddButton(investButtonRect, mainPanel);
+
             //investButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             investButton.OnMouseClick += InvestButton_OnMouseClick;
 
-            // Service button
-            serviceLabel.Position = new Vector2(0, 1);
-            serviceLabel.ShadowPosition = Vector2.zero;
-            serviceLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            serviceLabel.Text = GetServiceLabelText();
-            serviceButton = DaggerfallUI.AddButton(serviceButtonRect, mainPanel);
-            //serviceButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
-            serviceButton.Components.Add(serviceLabel);
-            serviceButton.OnMouseClick += ServiceButton_OnMouseClick;
+            // Sell button
+            sellButton = DaggerfallUI.AddButton(sellButtonRect, mainPanel);
+            //sellButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
+            sellButton.OnMouseClick += SellButton_OnMouseClick;
+            sellButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.MerchantSell);
 
             // Exit button
             exitButton = DaggerfallUI.AddButton(exitButtonRect, mainPanel);
             //exitButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             exitButton.OnMouseClick += ExitButton_OnMouseClick;
+            exitButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.MerchantExit);
 
             NativePanel.Components.Add(mainPanel);
         }
@@ -108,128 +114,123 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void InvestButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
-            if (currentService == Services.Sell)
+            int mercSkill = player.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile);
+            int playerIntell = player.Stats.LiveIntelligence;
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
-                int mercSkill = player.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile);
-                int playerIntell = player.Stats.LiveIntelligence;
-                if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+                investedFlag = sd.InvestedIn;
+                shopAttitude = sd.ShopAttitude;
+            }
+
+            if (playerIntell >= 30 && mercSkill >= 40)
+            {
+                DaggerfallInputMessageBox investMessageBox = new DaggerfallInputMessageBox(uiManager, this);
+                if (buildQual <= 3) // 01 - 03
                 {
-                    investedFlag = sd.InvestedIn;
-                    shopAttitude = sd.ShopAttitude;
+                    if (shopAttitude == 0)
+                        tokens = LGSTextTokenHolder.ShopTextTokensNice(10);
+                    else
+                        tokens = LGSTextTokenHolder.ShopTextTokensMean(13);
+                }
+                else if (buildQual <= 7) // 04 - 07
+                {
+                    if (shopAttitude == 0)
+                        tokens = LGSTextTokenHolder.ShopTextTokensNice(1);
+                    else
+                        tokens = LGSTextTokenHolder.ShopTextTokensMean(9);
+                }
+                else if (buildQual <= 17) // 08 - 17
+                {
+                    if (shopAttitude == 0)
+                        tokens = LGSTextTokenHolder.ShopTextTokensNice(14);
+                    else
+                        tokens = LGSTextTokenHolder.ShopTextTokensMean(17);
+                }
+                else                      // 18 - 20
+                {
+                    if (shopAttitude == 0)
+                        tokens = LGSTextTokenHolder.ShopTextTokensNice(18);
+                    else
+                        tokens = LGSTextTokenHolder.ShopTextTokensMean(21);
                 }
 
-                if (playerIntell >= 30 && mercSkill >= 40)
+                if (investedFlag)
                 {
-                    DaggerfallInputMessageBox investMessageBox = new DaggerfallInputMessageBox(uiManager, this);
                     if (buildQual <= 3) // 01 - 03
                     {
                         if (shopAttitude == 0)
-                            tokens = LGSTextTokenHolder.ShopTextTokensNice(10);
+                            tokens = LGSTextTokenHolder.ShopTextTokensNice(12);
                         else
-                            tokens = LGSTextTokenHolder.ShopTextTokensMean(13);
+                            tokens = LGSTextTokenHolder.ShopTextTokensMean(15);
                     }
                     else if (buildQual <= 7) // 04 - 07
                     {
                         if (shopAttitude == 0)
-                            tokens = LGSTextTokenHolder.ShopTextTokensNice(1);
+                            tokens = LGSTextTokenHolder.ShopTextTokensNice(2);
                         else
-                            tokens = LGSTextTokenHolder.ShopTextTokensMean(9);
+                            tokens = LGSTextTokenHolder.ShopTextTokensMean(11);
                     }
                     else if (buildQual <= 17) // 08 - 17
                     {
                         if (shopAttitude == 0)
-                            tokens = LGSTextTokenHolder.ShopTextTokensNice(14);
+                            tokens = LGSTextTokenHolder.ShopTextTokensNice(16);
                         else
-                            tokens = LGSTextTokenHolder.ShopTextTokensMean(17);
+                            tokens = LGSTextTokenHolder.ShopTextTokensMean(19);
                     }
                     else                      // 18 - 20
                     {
                         if (shopAttitude == 0)
-                            tokens = LGSTextTokenHolder.ShopTextTokensNice(18);
+                            tokens = LGSTextTokenHolder.ShopTextTokensNice(20);
                         else
-                            tokens = LGSTextTokenHolder.ShopTextTokensMean(21);
+                            tokens = LGSTextTokenHolder.ShopTextTokensMean(23);
                     }
-
-                    if (investedFlag)
-                    {
-                        if (buildQual <= 3) // 01 - 03
-                        {
-                            if (shopAttitude == 0)
-                                tokens = LGSTextTokenHolder.ShopTextTokensNice(12);
-                            else
-                                tokens = LGSTextTokenHolder.ShopTextTokensMean(15);
-                        }
-                        else if (buildQual <= 7) // 04 - 07
-                        {
-                            if (shopAttitude == 0)
-                                tokens = LGSTextTokenHolder.ShopTextTokensNice(2);
-                            else
-                                tokens = LGSTextTokenHolder.ShopTextTokensMean(11);
-                        }
-                        else if (buildQual <= 17) // 08 - 17
-                        {
-                            if (shopAttitude == 0)
-                                tokens = LGSTextTokenHolder.ShopTextTokensNice(16);
-                            else
-                                tokens = LGSTextTokenHolder.ShopTextTokensMean(19);
-                        }
-                        else                      // 18 - 20
-                        {
-                            if (shopAttitude == 0)
-                                tokens = LGSTextTokenHolder.ShopTextTokensNice(20);
-                            else
-                                tokens = LGSTextTokenHolder.ShopTextTokensMean(23);
-                        }
-                    }
-                    investMessageBox.SetTextTokens(tokens);
-                    investMessageBox.TextPanelDistanceY = 0;
-                    investMessageBox.InputDistanceX = 24;
-                    investMessageBox.InputDistanceY = 2;
-                    investMessageBox.TextBox.Numeric = true;
-                    investMessageBox.TextBox.MaxCharacters = 9;
-                    investMessageBox.TextBox.Text = "1";
-                    investMessageBox.OnGotUserInput += InvestMessageBox_OnGotUserInput;
-                    investMessageBox.Show();
                 }
-                else if (shopAttitude == 1 && buildQual <= 7 && playerIntell < 30)
+                investMessageBox.SetTextTokens(tokens);
+                investMessageBox.TextPanelDistanceY = 0;
+                investMessageBox.InputDistanceX = 24;
+                investMessageBox.InputDistanceY = 2;
+                investMessageBox.TextBox.Numeric = true;
+                investMessageBox.TextBox.MaxCharacters = 9;
+                investMessageBox.TextBox.Text = "1";
+                investMessageBox.OnGotUserInput += InvestMessageBox_OnGotUserInput;
+                investMessageBox.Show();
+            }
+            else if (shopAttitude == 1 && buildQual <= 7 && playerIntell < 30)
+            {
+                DaggerfallInputMessageBox scamMessageBox = new DaggerfallInputMessageBox(uiManager, this);
+                tokens = LGSTextTokenHolder.ShopTextTokensMean(1);
+				scamMessageBox.InputDistanceY = 2;
+                if (investedFlag)
+                //if (test == 0)
                 {
-                    DaggerfallInputMessageBox scamMessageBox = new DaggerfallInputMessageBox(uiManager, this);
-                    tokens = LGSTextTokenHolder.ShopTextTokensMean(1);
-                    scamMessageBox.InputDistanceY = 2;
-                    if (investedFlag)
-                    //if (test == 0)
-                    {
-                        tokens = LGSTextTokenHolder.ShopTextTokensMean(2);
-                        scamMessageBox.InputDistanceY = 9;
-                    }
-                    scamMessageBox.SetTextTokens(tokens);
-                    scamMessageBox.TextPanelDistanceY = 0;
-                    scamMessageBox.InputDistanceX = 24;
-                    scamMessageBox.TextBox.Numeric = true;
-                    scamMessageBox.TextBox.MaxCharacters = 9;
-                    scamMessageBox.TextBox.Text = "1";
-                    scamMessageBox.OnGotUserInput += ScamMessageBox_OnGotUserInput;
-                    scamMessageBox.Show();
+                    tokens = LGSTextTokenHolder.ShopTextTokensMean(2);
+					scamMessageBox.InputDistanceY = 9;
                 }
-                else if (playerIntell < 30)
-                {
-                    tokens = LGSTextTokenHolder.ShopTextTokensNeutral(1);
-                    DaggerfallUI.MessageBox(tokens);
-                }
-                else
-                {
-                    tokens = LGSTextTokenHolder.ShopTextTokensNeutral(2);
-                    DaggerfallUI.MessageBox(tokens);
-                }
+                scamMessageBox.SetTextTokens(tokens);
+                scamMessageBox.TextPanelDistanceY = 0;
+                scamMessageBox.InputDistanceX = 24;
+                scamMessageBox.TextBox.Numeric = true;
+                scamMessageBox.TextBox.MaxCharacters = 9;
+                scamMessageBox.TextBox.Text = "1";
+                scamMessageBox.OnGotUserInput += ScamMessageBox_OnGotUserInput;
+                scamMessageBox.Show();
+            }
+            else if (playerIntell < 30)
+            {
+                tokens = LGSTextTokenHolder.ShopTextTokensNeutral(1);
+                DaggerfallUI.MessageBox(tokens);
             }
             else
-                DaggerfallUI.MessageBox("We don't accept investment offers here, sorry.");
+            {
+                tokens = LGSTextTokenHolder.ShopTextTokensNeutral(2);
+                DaggerfallUI.MessageBox(tokens);
+            }
         }
 
         protected void InvestMessageBox_OnGotUserInput(DaggerfallInputMessageBox sender, string input)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -313,7 +314,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void ScamMessageBox_OnGotUserInput(DaggerfallInputMessageBox sender, string input)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -339,7 +340,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void ConfirmInvestment_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -381,7 +382,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                         else
                             DaggerfallUI.MessageBox("Wipe your feet next time, you're tracking sludge in, lamprey.");
                     }
-                    LimitedGoldShops.LimitedGoldShops.UpdateInvestAmount(investOffer);
+                    LimitedGoldShops.LimitedGoldShopsMain.UpdateInvestAmount(investOffer);
                 }
                 else
                 {
@@ -451,7 +452,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void ConfirmGettingScammed_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -472,7 +473,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     }
                     DaggerfallUI.MessageBox(tokens);
                     investOffer = 0;
-                    LimitedGoldShops.LimitedGoldShops.UpdateInvestAmount(investOffer);
+                    LimitedGoldShops.LimitedGoldShopsMain.UpdateInvestAmount(investOffer);
                 }
                 else
                     DaggerfallUI.MessageBox("Good joke there, you really got me there, ya jerk...");

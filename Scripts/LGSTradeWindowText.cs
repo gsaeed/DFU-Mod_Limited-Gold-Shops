@@ -9,6 +9,8 @@ using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Guilds;
 using LimitedGoldShops;
 using System;
+using System.Collections.Generic;
+
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -66,6 +68,238 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             : base(uiManager, previous, windowMode, guild)
         {
 
+        }
+
+        List<ItemGroups> itemTypesAccepted = storeBuysItemType[DFLocation.BuildingTypes.GeneralStore];
+
+        static Dictionary<DFLocation.BuildingTypes, List<ItemGroups>> storeBuysItemType = new Dictionary<DFLocation.BuildingTypes, List<ItemGroups>>()
+        {
+            { DFLocation.BuildingTypes.Alchemist, new List<ItemGroups>()
+                { ItemGroups.Gems, ItemGroups.CreatureIngredients1, ItemGroups.CreatureIngredients2, ItemGroups.CreatureIngredients3, ItemGroups.PlantIngredients1, ItemGroups.PlantIngredients2, ItemGroups.MiscellaneousIngredients1, ItemGroups.MiscellaneousIngredients2, ItemGroups.MetalIngredients } },
+            { DFLocation.BuildingTypes.Armorer, new List<ItemGroups>()
+                { ItemGroups.Armor, ItemGroups.Weapons } },
+            { DFLocation.BuildingTypes.Bookseller, new List<ItemGroups>()
+                { ItemGroups.Books } },
+            { DFLocation.BuildingTypes.ClothingStore, new List<ItemGroups>()
+                { ItemGroups.MensClothing, ItemGroups.WomensClothing } },
+            { DFLocation.BuildingTypes.FurnitureStore, new List<ItemGroups>()
+                { ItemGroups.Furniture } },
+            { DFLocation.BuildingTypes.GemStore, new List<ItemGroups>()
+                { ItemGroups.Gems, ItemGroups.Jewellery } },
+            { DFLocation.BuildingTypes.GeneralStore, new List<ItemGroups>()
+                { ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Transportation, ItemGroups.Jewellery, ItemGroups.Weapons, ItemGroups.UselessItems2 } },
+            { DFLocation.BuildingTypes.PawnShop, new List<ItemGroups>()
+                { ItemGroups.Armor, ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Gems, ItemGroups.Jewellery, ItemGroups.ReligiousItems, ItemGroups.Weapons, ItemGroups.UselessItems2, ItemGroups.Paintings } },
+            { DFLocation.BuildingTypes.WeaponSmith, new List<ItemGroups>()
+                { ItemGroups.Armor, ItemGroups.Weapons } },
+        };
+
+
+        public bool IsItemWithinShopStandards(DaggerfallUnityItem itemChecked)
+        {
+            int material = -1;
+            int baseGoldValue = itemChecked.value;
+
+            if (itemChecked.ItemGroup == ItemGroups.Weapons || itemChecked.ItemGroup == ItemGroups.Armor)
+            {
+                material = GetMaterialTypeInt(itemChecked.NativeMaterialValue);
+
+                if (itemChecked.IsArtifact)
+                    material = 11;
+
+                switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
+                {
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                        if (material <= 4)
+                            return false;
+                        else
+                            return true;
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                        if (material <= 6)
+                            return false;
+                        else
+                            return true;
+                    case 18:
+                    case 19:
+                    case 20:
+                        if (material <= 8)
+                            return false;
+                        else
+                            return true;
+                    default:
+                        return true;
+                }
+            }
+            else if (itemChecked.ItemGroup == ItemGroups.MensClothing || itemChecked.ItemGroup == ItemGroups.WomensClothing)
+            {
+                switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
+                {
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                        if (baseGoldValue <= 9)
+                            return false;
+                        else
+                            return true;
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                        if (baseGoldValue <= 24)
+                            return false;
+                        else
+                            return true;
+                    case 18:
+                    case 19:
+                    case 20:
+                        if (baseGoldValue <= 99)
+                            return false;
+                        else
+                            return true;
+                    default:
+                        return true;
+                }
+            }
+            else if (itemChecked.ItemGroup == ItemGroups.ReligiousItems)
+            {
+                switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
+                {
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                        if (baseGoldValue <= 15)
+                            return false;
+                        else
+                            return true;
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                        if (baseGoldValue <= 40)
+                            return false;
+                        else
+                            return true;
+                    case 18:
+                    case 19:
+                    case 20:
+                        if (baseGoldValue <= 99)
+                            return false;
+                        else
+                            return true;
+                    default:
+                        return true;
+                }
+            }
+            else if (itemChecked.IsIngredient)
+            {
+                switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
+                {
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                        if (baseGoldValue <= 7)
+                            return false;
+                        else
+                            return true;
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                        if (baseGoldValue <= 19)
+                            return false;
+                        else
+                            return true;
+                    case 18:
+                    case 19:
+                    case 20:
+                        if (baseGoldValue <= 29)
+                            return false;
+                        else
+                            return true;
+                    default:
+                        return true;
+                }
+            }
+            else
+                return true;
+        }
+
+        public int GetMaterialTypeInt(int nativeMatValue) // -1 = Unknown, 0 = Leather, 1 = Chain, 2 = Iron, 3 = Steel, 4 = Silver, 5 = Elven, 6 = Dwarven, 7 = Mithril, 8 = Adamantium, 9 = Ebony, 10 = Orcish, 11 = Daedric.
+        {
+            if (nativeMatValue <= 9 && nativeMatValue >= 0) // Checks if the item material is for weapons, and leather armor.
+            {
+                switch (nativeMatValue)
+                {
+                    case (int)WeaponMaterialTypes.Iron:
+                        return 2;
+                    case (int)WeaponMaterialTypes.Steel:
+                        return 3;
+                    case (int)WeaponMaterialTypes.Silver:
+                        return 4;
+                    case (int)WeaponMaterialTypes.Elven:
+                        return 5;
+                    case (int)WeaponMaterialTypes.Dwarven:
+                        return 6;
+                    case (int)WeaponMaterialTypes.Mithril:
+                        return 7;
+                    case (int)WeaponMaterialTypes.Adamantium:
+                        return 8;
+                    case (int)WeaponMaterialTypes.Ebony:
+                        return 9;
+                    case (int)WeaponMaterialTypes.Orcish:
+                        return 10;
+                    case (int)WeaponMaterialTypes.Daedric:
+                        return 11;
+                    default:
+                        return 0; // Leather should default to this.
+                }
+            }
+            else if (nativeMatValue <= 521 && nativeMatValue >= 256) // Checks if the item material is for armors.
+            {
+                switch (nativeMatValue)
+                {
+                    case (int)ArmorMaterialTypes.Chain:
+                    case (int)ArmorMaterialTypes.Chain2:
+                        return 1;
+                    case (int)ArmorMaterialTypes.Iron:
+                        return 2;
+                    case (int)ArmorMaterialTypes.Steel:
+                        return 3;
+                    case (int)ArmorMaterialTypes.Silver:
+                        return 4;
+                    case (int)ArmorMaterialTypes.Elven:
+                        return 5;
+                    case (int)ArmorMaterialTypes.Dwarven:
+                        return 6;
+                    case (int)ArmorMaterialTypes.Mithril:
+                        return 7;
+                    case (int)ArmorMaterialTypes.Adamantium:
+                        return 8;
+                    case (int)ArmorMaterialTypes.Ebony:
+                        return 9;
+                    case (int)ArmorMaterialTypes.Orcish:
+                        return 10;
+                    case (int)ArmorMaterialTypes.Daedric:
+                        return 11;
+                    default:
+                        return -1;
+                }
+            }
+            else
+                return -1;
         }
 
         protected override void Setup()
@@ -172,7 +406,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                             (WindowMode == WindowModes.Sell && ItemTypesAccepted.Contains(item.ItemGroup)) ||
                             (WindowMode == WindowModes.SellMagic && item.IsEnchanted)))
                     {
-                        if (ItemPassesFilter(item))
+                        if (ItemPassesFilter(item) && !LimitedGoldShopsMain.GetShopStandardsSetting())
+                            AddLocalItem(item);
+                        else if (ItemPassesFilter(item) && LimitedGoldShopsMain.GetShopStandardsSetting() &&
+                                 IsItemWithinShopStandards(item))
                             AddLocalItem(item);
                     }
                     else
@@ -312,7 +549,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected override void ShowTradePopup()
         {
             const int tradeMessageBaseId = 260;
-            const int notEnoughGoldId = 454;
+            //const int notEnoughGoldId = 454;
             int msgOffset = 0;
             int tradePrice = GetTradePrice();
 
@@ -322,7 +559,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int creditAmt = 0;
             bool ignore = true;
             LimitedGoldShops.ShopData sd;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 shopAttitude = sd.ShopAttitude;
@@ -421,11 +658,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             PlayerEnterExit playerEnterExit = GameManager.Instance.PlayerEnterExit;
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
-            LimitedGoldShops.ShopData sd;
+            ShopData sd;
             int goldSupply = 0;
             uint investedAmount = 0;
             int creditAmt = 0;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 creditAmt = sd.CurrentCreditSupply;
@@ -454,8 +691,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         void DeductGoldAmount(int tradePrice)
         {
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
-            LimitedGoldShops.ShopData sd;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            ShopData sd;
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 if (sd.CurrentCreditSupply > 0)
                 {
@@ -534,7 +771,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 else
                     DaggerfallUI.Instance.PlayOneShot(SoundClips.GoldPieces);
                 PlayerEntity.TallySkill(DFCareer.Skills.Mercantile, 1);
-                LimitedGoldShops.LimitedGoldShops.TradeUpdateShopGold(WindowMode, tradePrice);
+                LimitedGoldShops.LimitedGoldShopsMain.TradeUpdateShopGold(WindowMode, tradePrice);
                 UpdateShopGoldDisplay();
 				Refresh();
             }
@@ -550,7 +787,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             LimitedGoldShops.ShopData sd;
             int goldSupply = 0;
             int creditAmt = 0;
-            if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 creditAmt = sd.CurrentCreditSupply;
@@ -580,7 +817,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 else
                     DaggerfallUI.Instance.PlayOneShot(SoundClips.GoldPieces);
                 PlayerEntity.TallySkill(DFCareer.Skills.Mercantile, 1);
-                LimitedGoldShops.LimitedGoldShops.TradeUpdateShopGold(WindowMode, goldSupply, createCreditAmt);
+                LimitedGoldShops.LimitedGoldShopsMain.TradeUpdateShopGold(WindowMode, goldSupply, createCreditAmt);
                 UpdateShopGoldDisplay();
 				Refresh();
             }
@@ -598,7 +835,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 int goldSupply = 0;
                 uint investedAmount = 0;
                 int creditAmt = 0;
-                if (LimitedGoldShops.LimitedGoldShops.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+                if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
                 {
                     goldSupply = sd.CurrentGoldSupply;
                     investedAmount = sd.AmountInvested;

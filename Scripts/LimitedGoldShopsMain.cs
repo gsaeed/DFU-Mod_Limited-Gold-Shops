@@ -17,6 +17,8 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+
 
 namespace LimitedGoldShops
 {
@@ -36,10 +38,15 @@ namespace LimitedGoldShops
         public int CurrentCreditSupply;
     }
 
-    public class LimitedGoldShops : MonoBehaviour, IHasModSaveData
+    public class LimitedGoldShopsMain : MonoBehaviour, IHasModSaveData
     {
         static Mod mod;
-        static LimitedGoldShops instance;
+        static LimitedGoldShopsMain instance;
+
+        public static LimitedGoldShopsMain Instance
+        {
+            get { return instance ?? (instance = FindObjectOfType<LimitedGoldShopsMain>()); }
+        }
 
         public static Dictionary<int, ShopData> ShopBuildingData;
 
@@ -78,8 +85,7 @@ namespace LimitedGoldShops
         public static void Init(InitParams initParams)
         {
             mod = initParams.Mod;
-            var go = new GameObject("LimitedGoldShops");
-            instance = go.AddComponent<LimitedGoldShops>();
+            instance = new GameObject("LimitedGoldShops").AddComponent<LimitedGoldShopsMain>(); // Add script to the scene.
             mod.SaveDataInterface = instance;
             if (ShopBuildingData == null) 
             {
@@ -89,19 +95,63 @@ namespace LimitedGoldShops
 
             WorldTime.OnNewDay += RemoveExpiredShops_OnNewDay;
 
+            mod.LoadSettingsCallback = LoadSettings; // To enable use of the "live settings changes" feature in-game.
+
+            // initiates mod message handler
+            mod.MessageReceiver = DFModMessageReceiver;
+
             mod.IsReady = true;
+
         }
 
-        void Awake()
+        static void DFModMessageReceiver(string message, object data, DFModMessageCallback callBack)
         {
-            InitMod();
+            switch (message)
+            {
+                case "GetShopGoldSupply":
+                    callBack?.Invoke(message, FlexCurrentGoldSupply);
+                    break;
+                default:
+                    callBack?.Invoke(message, "Unknown message");
+                    break;
+            }
         }
 
-        private static void InitMod()
+        private void Start()
         {
             Debug.Log("Begin mod init: LimitedGoldShops");
-            
+
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Trade, typeof(LGSTradeWindowText));
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantRepairPopup, typeof(LGSMerchantTradeRepairPopupWindowReplace));
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantServicePopup, typeof(LGSMerchantTradeServicePopupWindowReplace));
+            Debug.Log("LimitedGoldShops Registered It's Windows");
+
+            mod.LoadSettings();
+
+            PlayerEnterExit.OnTransitionInterior += GenerateShop_OnTransitionInterior;
+
+            WorldTime.OnNewDay += RemoveExpiredShops_OnNewDay;
+
             Debug.Log("Finished mod init: LimitedGoldShops");
+        }
+
+        static void LoadSettings(ModSettings modSettings, ModSettingsChange change)
+        {
+            ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
+            ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
+        }
+
+        public static float ShopGoldSettingModifier { get; set; }
+        public static bool ShopStandardsSetting { get; set; }
+
+        public static float GetShopGoldSettingModifier()
+        {
+            return ShopGoldSettingModifier;
+        }
+
+        public static bool GetShopStandardsSetting()
+        {
+            return ShopStandardsSetting;
         }
 
         public static void TradeUpdateShopGold(DaggerfallTradeWindow.WindowModes mode, int value, int creditAmt = 0)
