@@ -16,5 +16,6 @@
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSMerchantTradeRepairPopupWindowReplace.cs",
         "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Services_Replacer.png",
         "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Repair_Replacer.png"
-    ]
+    ],
+    "ModPreCompile": false
 }
