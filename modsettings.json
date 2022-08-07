@@ -8,8 +8,8 @@
             "Keys": [
                 {
                     "Min": 0.05,
-                    "Max": 3.00,
-                    "Value": 1.00,
+                    "Max": 3.0,
+                    "Value": 1.0,
                     "Name": "ShopGoldModifier",
                     "Description": "Default = 1.00 || Modifier For Overall Gold Amount Shops Are Given Upon Generating",
                     "$version": "v1",
@@ -19,6 +19,41 @@
                     "Value": false,
                     "Name": "ShopStandards",
                     "Description": "Default = 1 || Higher Quality Shops Will Not Buy Low Quality/Value Items, They Have Standards",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckPawnShops",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckWeaponsArmor",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckClothing",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckReligiousItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckIngredients",
+                    "Description": null,
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }

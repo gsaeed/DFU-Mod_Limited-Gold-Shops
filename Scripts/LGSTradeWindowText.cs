@@ -10,6 +10,7 @@ using DaggerfallWorkshop.Game.Guilds;
 using LimitedGoldShops;
 using System;
 using System.Collections.Generic;
+using UnityEditorInternal;
 
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
@@ -72,7 +73,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         List<ItemGroups> itemTypesAccepted = storeBuysItemType[DFLocation.BuildingTypes.GeneralStore];
 
-        static Dictionary<DFLocation.BuildingTypes, List<ItemGroups>> storeBuysItemType = new Dictionary<DFLocation.BuildingTypes, List<ItemGroups>>()
+        static new Dictionary<DFLocation.BuildingTypes, List<ItemGroups>> storeBuysItemType = new Dictionary<DFLocation.BuildingTypes, List<ItemGroups>>()
         {
             { DFLocation.BuildingTypes.Alchemist, new List<ItemGroups>()
                 { ItemGroups.Gems, ItemGroups.CreatureIngredients1, ItemGroups.CreatureIngredients2, ItemGroups.CreatureIngredients3, ItemGroups.PlantIngredients1, ItemGroups.PlantIngredients2, ItemGroups.MiscellaneousIngredients1, ItemGroups.MiscellaneousIngredients2, ItemGroups.MetalIngredients } },
@@ -100,8 +101,15 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int material = -1;
             int baseGoldValue = itemChecked.value;
 
+            var building = GameManager.Instance.PlayerEnterExit.BuildingType;
+            if (!LimitedGoldShopsMain.CheckPawnShops && building == DFLocation.BuildingTypes.PawnShop)
+                return true;
+
             if (itemChecked.ItemGroup == ItemGroups.Weapons || itemChecked.ItemGroup == ItemGroups.Armor)
             {
+                if (!LimitedGoldShopsMain.CheckWeaponsArmor)
+                    return true;
+
                 material = GetMaterialTypeInt(itemChecked.NativeMaterialValue);
 
                 if (itemChecked.IsArtifact)
@@ -109,27 +117,48 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
                 switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
                 {
-                    case 9:
-                    case 10:
-                    case 11:
-                    case 12:
-                    case 13:
-                        if (material <= 4)
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        if (material >= 4)
                             return false;
                         else
                             return true;
+
+                    case 7:
+                    case 8:
+                    case 9:
+                        if (material <= 2)
+                            return false;
+                        else if (material > 6)
+                            return false;
+                        else
+                            return true;
+                    case 12:
+                    case 13:
                     case 14:
+                        if (material <= 3)
+                            return false;
+                        else if (material >= 8)
+                            return false;
+                        else
+                            return true;
                     case 15:
                     case 16:
                     case 17:
-                        if (material <= 6)
+                        if (material <= 5)
+                            return false;
+                        else if (material >= 10)
                             return false;
                         else
                             return true;
                     case 18:
                     case 19:
                     case 20:
-                        if (material <= 8)
+                        if (material <= 6)
                             return false;
                         else
                             return true;
@@ -139,6 +168,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else if (itemChecked.ItemGroup == ItemGroups.MensClothing || itemChecked.ItemGroup == ItemGroups.WomensClothing)
             {
+                if (!LimitedGoldShopsMain.CheckClothing)
+                    return true;
+
                 switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
                 {
                     case 9:
@@ -171,6 +203,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else if (itemChecked.ItemGroup == ItemGroups.ReligiousItems)
             {
+                if (!LimitedGoldShopsMain.CheckReligiousItems)
+                    return true;
+
                 switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
                 {
                     case 9:
@@ -203,6 +238,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else if (itemChecked.IsIngredient)
             {
+                if (!LimitedGoldShopsMain.CheckIngredients)
+                    return true;
+
                 switch (GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality)
                 {
                     case 9:
@@ -408,9 +446,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     {
                         if (ItemPassesFilter(item) && !LimitedGoldShopsMain.GetShopStandardsSetting())
                             AddLocalItem(item);
-                        else if (ItemPassesFilter(item) && LimitedGoldShopsMain.GetShopStandardsSetting() &&
-                                 IsItemWithinShopStandards(item))
-                            AddLocalItem(item);
+                        else if (ItemPassesFilter(item) && LimitedGoldShopsMain.GetShopStandardsSetting())
+                            if(IsItemWithinShopStandards(item))
+                            {
+                                AddLocalItem(item);
+                            }
+
                     }
                     else
                     {
