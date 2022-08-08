@@ -3,14 +3,12 @@ using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterface;
-using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Guilds;
 using LimitedGoldShops;
 using System;
 using System.Collections.Generic;
-using UnityEditorInternal;
 
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows

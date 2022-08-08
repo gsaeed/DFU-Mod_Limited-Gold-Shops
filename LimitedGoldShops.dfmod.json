@@ -5,17 +5,17 @@
     "ContactInfo": "kirkoliveri@gmail.com",
     "DFUnity_Version": "0.10.25",
     "ModDescription": "Gives All Shops A Limited Supply Of Gold, Restocked Bi-Weekly.  Added Logic for Inventory Filter",
-    "GUID": "df04bd2f-c676-4abe-9b50-047bdce4f15a",
+    "GUID": "7fc2d63b-9385-437a-ac8f-008fa34b4943",
     "Files": [
         "Assets/Game/Mods/LimitedGoldShops/modsettings.json",
-        "Assets/Game/Mods/LimitedGoldShops/LimitedGoldShops.dfmod.json",
-        "Assets/Game/Mods/LimitedGoldShops/Scripts/LimitedGoldShopsMain.cs",
-        "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSMerchantTradeServicePopupWindowReplace.cs",
+        "Assets/Game/Mods/LimitedGoldShops/README.md",
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSTradeWindowText.cs",
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSTextTokenHolder.cs",
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSMerchantTradeRepairPopupWindowReplace.cs",
+        "Assets/Game/Mods/LimitedGoldShops/Scripts/LimitedGoldShopsMain.cs",
+        "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSMerchantTradeServicePopupWindowReplace.cs",
         "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Services_Replacer.png",
         "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Repair_Replacer.png"
     ],
-    "ModPreCompile": false
+    "ModPreCompile": true
 }
