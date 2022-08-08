@@ -121,45 +121,102 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     case 4:
                     case 5:
                     case 6:
-                        if (material >= 4)
-                            return false;
+                        if (itemChecked.IsEnchanted)
+                        {
+                            if (material >= 3)
+                                return false;
+                            else
+                                return true;
+                        }
                         else
-                            return true;
+                        {
+                            if (material >= 4)
+                                return false;
+                            else
+                                return true;                            
+                        }
+
 
                     case 7:
                     case 8:
                     case 9:
-                        if (material <= 2)
-                            return false;
-                        else if (material > 6)
-                            return false;
+                        if (itemChecked.IsEnchanted)
+                        {
+                            if (material <= 0)
+                                return false;
+                            else if (material > 4)
+                                return false;
+                            else
+                                return true;
+                        }
                         else
-                            return true;
+                        {
+                            if (material <= 2)
+                                return false;
+                            else if (material > 6)
+                                return false;
+                            else
+                                return true;
+                        }
                     case 12:
                     case 13:
                     case 14:
-                        if (material <= 3)
-                            return false;
-                        else if (material >= 8)
-                            return false;
+                        if (itemChecked.IsEnchanted)
+                        {
+                            if (material <= 1)
+                                return false;
+                            else if (material >= 6)
+                                return false;
+                            else
+                                return true;
+                        }
                         else
-                            return true;
+                        {
+                            if (material <= 3)
+                                return false;
+                            else if (material >= 8)
+                                return false;
+                            else
+                                return true;
+                        }
                     case 15:
                     case 16:
                     case 17:
-                        if (material <= 5)
-                            return false;
-                        else if (material >= 10)
-                            return false;
+                        if (itemChecked.IsEnchanted)
+                        {
+                            if (material <= 3)
+                                return false;
+                            else if (material >= 8)
+                                return false;
+                            else
+                                return true;
+                        }
                         else
-                            return true;
+                        {
+                            if (material <= 5)
+                                return false;
+                            else if (material >= 10)
+                                return false;
+                            else
+                                return true;
+                        }
                     case 18:
                     case 19:
                     case 20:
-                        if (material <= 6)
-                            return false;
+                        if (itemChecked.IsEnchanted)
+                        {
+                            if (material <= 4)
+                                return false;
+                            else
+                                return true;
+                        }
                         else
-                            return true;
+                        {
+                            if (material <= 6)
+                                return false;
+                            else
+                                return true;
+                        }
                     default:
                         return true;
                 }
