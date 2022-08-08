@@ -15,7 +15,9 @@
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LimitedGoldShopsMain.cs",
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSMerchantTradeServicePopupWindowReplace.cs",
         "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Services_Replacer.png",
-        "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Repair_Replacer.png"
+        "Assets/Game/Mods/LimitedGoldShops/Textures/LGS_Invest_Popup_Repair_Replacer.png",
+        "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/AsesinoInventoryWindow.cs",
+        "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/AsesinoTradeWindow.cs"
     ],
     "ModPreCompile": true
 }
