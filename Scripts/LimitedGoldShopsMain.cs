@@ -139,11 +139,12 @@ namespace LimitedGoldShops
         {
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
+
             CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
             CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
             CheckReligiousItems = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckReligiousItems");
             CheckIngredients = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckIngredients");
-            CheckPawnShops = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckPawnShops");
+
             AsesinoTradeWindow.CheckGeneralStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckGeneralStore");
             AsesinoTradeWindow.CheckPawnShops = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckPawnShops");
             AsesinoTradeWindow.CheckArmorer = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckArmorer");
@@ -160,7 +161,6 @@ namespace LimitedGoldShops
         public static bool CheckClothing { get; set;  }
         public static bool CheckReligiousItems { get; set; }
         public static bool CheckIngredients { get; set; }
-        public static bool CheckPawnShops { get; set; }
 
         public static float GetShopGoldSettingModifier()
         {

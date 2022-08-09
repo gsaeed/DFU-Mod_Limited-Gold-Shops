@@ -55,22 +55,34 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 { ItemGroups.Armor, ItemGroups.Weapons } },
         };
 
+        protected override void FilterRemoteItemsWithoutRepair()
+        {
+            DaggerfallUnityItem item;
+            // Clear current references
+            remoteItemsFiltered.Clear();
 
+            // Add items to list
+            if (remoteItems != null)
+                for (int i = 0; i < remoteItems.Count; i++)
+                {
+
+                    item = remoteItems.GetItem(i);
+                    if (ItemPassesFilter(item) && TabPassesFilter(item) &&
+                        (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting && IsItemWithinShopStandards(item) ) )
+                        remoteItemsFiltered.Add(item);
+                }
+        }
+        
         public bool IsItemWithinShopStandards(DaggerfallUnityItem itemChecked)
         {
-            int material = -1;
             int baseGoldValue = itemChecked.value;
-
-            var building = GameManager.Instance.PlayerEnterExit.BuildingType;
-            if (!LimitedGoldShopsMain.CheckPawnShops && building == DFLocation.BuildingTypes.PawnShop)
-                return true;
-
+            
             if (itemChecked.ItemGroup == ItemGroups.Weapons || itemChecked.ItemGroup == ItemGroups.Armor)
             {
                 if (!LimitedGoldShopsMain.CheckWeaponsArmor)
                     return true;
 
-                material = GetMaterialTypeInt(itemChecked.NativeMaterialValue);
+                var material = GetMaterialTypeInt(itemChecked.NativeMaterialValue);
 
                 if (itemChecked.IsArtifact)
                     material = 11;
