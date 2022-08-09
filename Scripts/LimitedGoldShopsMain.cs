@@ -139,12 +139,19 @@ namespace LimitedGoldShops
         {
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
-            CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("Options", "CheckWeaponsArmor");
-            CheckClothing = mod.GetSettings().GetValue<bool>("Options", "CheckClothing");
-            CheckReligiousItems = mod.GetSettings().GetValue<bool>("Options", "CheckReligiousItems");
-            CheckIngredients = mod.GetSettings().GetValue<bool>("Options", "CheckIngredients");
-            CheckPawnShops = mod.GetSettings().GetValue<bool>("Options", "CheckPawnShops");
-
+            CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
+            CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
+            CheckReligiousItems = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckReligiousItems");
+            CheckIngredients = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckIngredients");
+            CheckPawnShops = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckPawnShops");
+            AsesinoTradeWindow.CheckGeneralStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckGeneralStore");
+            AsesinoTradeWindow.CheckPawnShops = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckPawnShops");
+            AsesinoTradeWindow.CheckArmorer = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckArmorer");
+            AsesinoTradeWindow.CheckWeaponShop = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckWeaponShop");
+            AsesinoTradeWindow.CheckAlchemist = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckAlchemist");
+            AsesinoTradeWindow.CheckClothingStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckClothingStore");
+            AsesinoTradeWindow.CheckBookStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckBookStore");
+            AsesinoTradeWindow.CheckGemStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckGemStore");
         }
 
         public static float ShopGoldSettingModifier { get; set; }

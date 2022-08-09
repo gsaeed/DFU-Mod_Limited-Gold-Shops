@@ -3,7 +3,7 @@
     "Sections": [
         {
             "Name": "Options",
-            "Description": "Options And Preferences For This Mod.",
+            "Description": null,
             "IsAdvanced": false,
             "Keys": [
                 {
@@ -16,19 +16,20 @@
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
                 },
                 {
-                    "Value": false,
-                    "Name": "ShopStandards",
-                    "Description": "Default = 1 || Higher Quality Shops Will Not Buy Low Quality/Value Items, They Have Standards",
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
-                },
-                {
                     "Value": true,
-                    "Name": "CheckPawnShops",
-                    "Description": null,
+                    "Name": "ShopStandards",
+                    "Description": "Default = True || Higher Quality Shops Will Not Buy Low Quality/Value Items, They Have Standards",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
-                },
+                }
+            ],
+            "$version": "v1"
+        },
+        {
+            "Name": "CheckItemFilter",
+            "Description": "Options And Preferences For This Mod.",
+            "IsAdvanced": false,
+            "Keys": [
                 {
                     "Value": true,
                     "Name": "CheckWeaponsArmor",
@@ -51,8 +52,79 @@
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 },
                 {
-                    "Value": true,
+                    "Value": false,
                     "Name": "CheckIngredients",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckBookValue",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                }
+            ],
+            "$version": "v1"
+        },
+        {
+            "Name": "CheckStoreSplitForTabs",
+            "Description": null,
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Value": true,
+                    "Name": "CheckGeneralStore",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "CheckPawnShops",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CheckArmorer",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CheckWeaponShop",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CheckAlchemist",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CheckClothingStore",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CheckBookStore",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CheckGemStore",
                     "Description": null,
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
