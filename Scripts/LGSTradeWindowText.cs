@@ -63,14 +63,20 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             // Add items to list
             if (remoteItems != null)
+            {
                 for (int i = 0; i < remoteItems.Count; i++)
                 {
 
                     item = remoteItems.GetItem(i);
                     if (ItemPassesFilter(item) && TabPassesFilter(item) &&
-                        (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting && IsItemWithinShopStandards(item) ) )
+                        (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
+                            IsItemWithinShopStandards(item)))
                         remoteItemsFiltered.Add(item);
                 }
+                if (remoteItemsFiltered.Count > 0)
+                    remoteItemsFiltered.Sort(new ItemComparer());
+            }
+
         }
         
         public bool IsItemWithinShopStandards(DaggerfallUnityItem itemChecked)
