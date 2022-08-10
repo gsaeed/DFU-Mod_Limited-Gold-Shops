@@ -73,8 +73,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                             IsItemWithinShopStandards(item)))
                         remoteItemsFiltered.Add(item);
                 }
+
                 if (remoteItemsFiltered.Count > 0)
-                    remoteItemsFiltered.Sort(new ItemComparer());
+                    AsesinoInventoryWindow.SortMe(ref remoteItemsFiltered);
             }
 
         }
