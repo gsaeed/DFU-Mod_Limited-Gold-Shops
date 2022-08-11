@@ -55,6 +55,61 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 { ItemGroups.Armor, ItemGroups.Weapons } },
         };
 
+
+        protected override void FilterLocalItems()
+        {
+            localItemsFiltered.Clear();
+
+            // Add any basket items to filtered list first, if not using wagon
+            if (WindowMode == WindowModes.Buy && !UsingWagon && BasketItems != null)
+            {
+                for (int i = 0; i < BasketItems.Count; i++)
+                {
+                    DaggerfallUnityItem item = BasketItems.GetItem(i);
+                    // Add if not equipped
+                    if (!item.IsEquipped)
+                    {
+                        AddLocalItem(item);
+                    }
+
+                }
+            }
+            // Add local items to filtered list
+            if (localItems != null)
+            {
+                for (int i = 0; i < localItems.Count; i++)
+                {
+                    // Add if not equipped & accepted for selling
+                    DaggerfallUnityItem item = localItems.GetItem(i);
+                    if (!item.IsEquipped && (
+                            (WindowMode != WindowModes.Sell && WindowMode != WindowModes.SellMagic) ||
+                            (WindowMode == WindowModes.Sell && ItemTypesAccepted.Contains(item.ItemGroup)) ||
+                            (WindowMode == WindowModes.SellMagic && item.IsEnchanted)))
+                    {
+                        if (ItemPassesFilter(item) && TabPassesFilter(item) &&
+                            (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
+                                IsItemWithinShopStandards(item)))
+                            AddLocalItem(item);
+                    }
+                    else
+                    {
+                        if (GameManager.Instance.PlayerEnterExit.BuildingType == DaggerfallConnect.DFLocation.BuildingTypes.Alchemist &&
+                           item.LongName.ToLower().Contains("potion"))
+                        {
+                            if (ItemPassesFilter(item) && TabPassesFilter(item) &&
+                                (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
+                                    IsItemWithinShopStandards(item)))
+                                AddLocalItem(item);
+                        }
+
+                    }
+                }
+
+                if (localItemsFiltered.Count > 0)
+                    SortMe(ref localItemsFiltered);
+            }
+        }
+
         protected override void FilterRemoteItemsWithoutRepair()
         {
             DaggerfallUnityItem item;
@@ -75,7 +130,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
 
                 if (remoteItemsFiltered.Count > 0)
-                    AsesinoInventoryWindow.SortMe(ref remoteItemsFiltered);
+                    SortMe(ref remoteItemsFiltered);
             }
 
         }
@@ -83,7 +138,29 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         public bool IsItemWithinShopStandards(DaggerfallUnityItem itemChecked)
         {
             int baseGoldValue = itemChecked.value;
-            
+
+            if (!(GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.GeneralStore ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.PawnShop ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.Armorer ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.WeaponSmith ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.Alchemist ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.Bookseller ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.ClothingStore ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.GemStore ||
+                GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
+                DFLocation.BuildingTypes.GeneralStore))
+            {
+                return true;
+            }
+
             if (itemChecked.ItemGroup == ItemGroups.Weapons || itemChecked.ItemGroup == ItemGroups.Armor)
             {
                 if (!LimitedGoldShopsMain.CheckWeaponsArmor)
