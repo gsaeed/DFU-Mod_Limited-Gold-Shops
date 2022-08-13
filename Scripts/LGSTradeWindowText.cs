@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
-    public partial class LGSTradeWindowText : AsesinoTradeWindow, IMacroContextProvider
+    public partial class LGSTradeWindowText : AsesinoInfoTradeWindow, IMacroContextProvider
     {
         protected static TextLabel localTextLabelOne;
         protected static TextLabel localTextLabelTwo;
@@ -88,7 +88,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     {
                         if (ItemPassesFilter(item) && TabPassesFilter(item) &&
                             (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
-                                IsItemWithinShopStandards(item)))
+                                IsItemWithinShopStandards(item)) &&
+                                (WindowMode == WindowModes.Identify || LimitedGoldShopsMain.CanSellUnidentifiedItems ||
+                                 (!LimitedGoldShopsMain.CanSellUnidentifiedItems && (!item.IsEnchanted || item.IsIdentified))))
                             AddLocalItem(item);
                     }
                     else

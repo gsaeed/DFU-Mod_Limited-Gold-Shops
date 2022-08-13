@@ -36,12 +36,14 @@ namespace LimitedGoldShops
         public int BuildingQuality;
         public int CurrentGoldSupply;
         public int CurrentCreditSupply;
+
     }
 
     public class LimitedGoldShopsMain : MonoBehaviour, IHasModSaveData
     {
         static Mod mod;
         static LimitedGoldShopsMain instance;
+        public static bool CanSellUnidentifiedItems { get; set; }
 
         public static LimitedGoldShopsMain Instance
         {
@@ -139,8 +141,10 @@ namespace LimitedGoldShops
         {
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
+            CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
 
-            CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
+
+        CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
             CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
             CheckReligiousItems = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckReligiousItems");
             CheckIngredients = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckIngredients");

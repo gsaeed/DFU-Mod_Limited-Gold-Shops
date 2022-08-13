@@ -21,6 +21,13 @@
                     "Description": "Default = True || Higher Quality Shops Will Not Buy Low Quality/Value Items, They Have Standards",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "CanSellUnidentifiedItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }
             ],
             "$version": "v1"
