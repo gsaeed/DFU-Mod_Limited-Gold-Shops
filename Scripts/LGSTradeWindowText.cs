@@ -108,7 +108,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
 
                 if (localItemsFiltered.Count > 0)
-                    SortMe(ref localItemsFiltered);
+                    AsesinoInventoryWindow.SortMe(SortCriteria,ref localItemsFiltered);
             }
         }
 
@@ -132,7 +132,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
 
                 if (remoteItemsFiltered.Count > 0)
-                    SortMe(ref remoteItemsFiltered);
+                    AsesinoInventoryWindow.SortMe(SortCriteria,ref remoteItemsFiltered);
             }
 
         }
