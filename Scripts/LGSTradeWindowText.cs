@@ -86,7 +86,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                             (WindowMode == WindowModes.Sell && ItemTypesAccepted.Contains(item.ItemGroup)) ||
                             (WindowMode == WindowModes.SellMagic && item.IsEnchanted)))
                     {
-                        if (ItemPassesFilter(item) && TabPassesFilter(item) &&
+                        if (FilterUtilities.ItemPassesFilter( filterString, item) && TabPassesFilter(item) &&
                             (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                                 IsItemWithinShopStandards(item)) &&
                                 (WindowMode == WindowModes.Identify || LimitedGoldShopsMain.CanSellUnidentifiedItems ||
@@ -98,7 +98,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                         if (GameManager.Instance.PlayerEnterExit.BuildingType == DaggerfallConnect.DFLocation.BuildingTypes.Alchemist &&
                            item.LongName.ToLower().Contains("potion"))
                         {
-                            if (ItemPassesFilter(item) && TabPassesFilter(item) &&
+                            if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                                 (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                                     IsItemWithinShopStandards(item)))
                                 AddLocalItem(item);
@@ -108,7 +108,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
 
                 if (localItemsFiltered.Count > 0)
-                    AsesinoInventoryWindow.SortMe(SortCriteria,ref localItemsFiltered);
+                    FilterUtilities.SortMe(SortCriteria,ref localItemsFiltered);
             }
         }
 
@@ -125,14 +125,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
 
                     item = remoteItems.GetItem(i);
-                    if (ItemPassesFilter(item) && TabPassesFilter(item) &&
+                    if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                         (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                             IsItemWithinShopStandards(item)))
                         remoteItemsFiltered.Add(item);
                 }
 
                 if (remoteItemsFiltered.Count > 0)
-                    AsesinoInventoryWindow.SortMe(SortCriteria,ref remoteItemsFiltered);
+                    FilterUtilities.SortMe(SortCriteria,ref remoteItemsFiltered);
             }
 
         }
