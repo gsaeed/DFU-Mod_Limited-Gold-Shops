@@ -7,7 +7,6 @@
     "ModDescription": "Gives All Shops A Limited Supply Of Gold, Restocked Bi-Weekly.  Added Logic for Inventory Filter",
     "GUID": "7fc2d63b-9385-437a-ac8f-008fa34b4943",
     "Files": [
-        "Assets/Game/Mods/LimitedGoldShops/modsettings.json",
         "Assets/Game/Mods/LimitedGoldShops/README.md",
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSTradeWindowText.cs",
         "Assets/Game/Mods/LimitedGoldShops/Scripts/LGSTextTokenHolder.cs",
@@ -19,7 +18,10 @@
         "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/AsesinoInventoryWindow.cs",
         "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/AsesinoTradeWindow.cs",
         "Assets/Game/Mods/DaggerfallPrivateMods/InventoryInfoWindow/Scripts/AsesinoInfoTradeWindow.cs",
-        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryInfoWindow/Scripts/AsesinoInfoInventoryWindow.cs"
+        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryInfoWindow/Scripts/AsesinoInfoInventoryWindow.cs",
+        "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/FilterUtilities.cs",
+        "Assets/Game/Mods/LimitedGoldShops/LimitedGoldShops.dfmod.json",
+        "Assets/Game/Mods/LimitedGoldShops/modsettings.json"
     ],
     "ModPreCompile": true
 }

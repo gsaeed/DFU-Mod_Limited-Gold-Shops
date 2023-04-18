@@ -17,6 +17,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 
 
@@ -25,7 +26,7 @@ namespace LimitedGoldShops
     [FullSerializer.fsObject("v1")]
     public class LGSaveData
     {
-        public Dictionary<int, ShopData> ShopBuildingData;
+        public Dictionary<string, ShopData> ShopBuildingData;
     }
 
     public class ShopData {
@@ -44,13 +45,13 @@ namespace LimitedGoldShops
         static Mod mod;
         static LimitedGoldShopsMain instance;
         public static bool CanSellUnidentifiedItems { get; set; }
-
+        public static ulong DaysToReset { get; set; } = 15;
         public static LimitedGoldShopsMain Instance
         {
             get { return instance ?? (instance = FindObjectOfType<LimitedGoldShopsMain>()); }
         }
 
-        public static Dictionary<int, ShopData> ShopBuildingData;
+        public static Dictionary<string, ShopData> ShopBuildingData;
 
         public static int FlexCurrentGoldSupply { get; set; }
 
@@ -63,7 +64,7 @@ namespace LimitedGoldShops
         {
             return new LGSaveData
             {
-                ShopBuildingData = new Dictionary<int, ShopData>()
+                ShopBuildingData = new Dictionary<string, ShopData>()
             };
         }
 
@@ -91,7 +92,7 @@ namespace LimitedGoldShops
             mod.SaveDataInterface = instance;
             if (ShopBuildingData == null) 
             {
-                ShopBuildingData = new Dictionary<int, ShopData>();
+                ShopBuildingData = new Dictionary<string, ShopData>();
             }
             PlayerEnterExit.OnTransitionInterior += GenerateShop_OnTransitionInterior;
 
@@ -142,9 +143,10 @@ namespace LimitedGoldShops
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
             CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
+            DaysToReset = (ulong)mod.GetSettings().GetValue<int>("Options", "DaysToReset");
 
 
-        CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
+            CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
             CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
             CheckReligiousItems = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckReligiousItems");
             CheckIngredients = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckIngredients");
@@ -183,7 +185,7 @@ namespace LimitedGoldShops
             bool investedIn = false;
             uint amountInvested = 0;
             int shopAttitude = 0;
-            int buildingKey = 0;
+            string buildingKey = "";
             int currentGoldSupply = 0;
             int currentCreditAmt = 0;
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
@@ -192,9 +194,9 @@ namespace LimitedGoldShops
             try
             {
                 ShopData sd;
-                if (ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+                if (ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
                 {
-                    buildingKey = currentBuildingID;
+                    buildingKey = $"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}";
                     creationTime = sd.CreationTime;
                     investedIn = sd.InvestedIn;
                     amountInvested = sd.AmountInvested;
@@ -284,15 +286,15 @@ namespace LimitedGoldShops
             bool investedIn = false;
             uint amountInvested = 0;
             int shopAttitude = 0;
-            int buildingKey = 0;
+            string buildingKey = "";
             int currentGoldSupply = 0;
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
             PlayerEnterExit playerEnterExit = GameManager.Instance.PlayerEnterExit;
 
             ShopData sd;
-            if (ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
-                buildingKey = currentBuildingID;
+                buildingKey = $"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}";
                 creationTime = sd.CreationTime;
                 investedIn = sd.InvestedIn;
                 amountInvested = sd.AmountInvested;
@@ -321,23 +323,23 @@ namespace LimitedGoldShops
 
         protected static void RemoveExpiredShops_OnNewDay()
         {
-            List<int> expiredKeys = new List<int>();
+            List<string> expiredKeys = new List<string>();
             ulong creationTime = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToSeconds();
 
-            foreach (KeyValuePair<int, ShopData> kvp in ShopBuildingData)
+            foreach (KeyValuePair<string, ShopData> kvp in ShopBuildingData.ToArray())
             {
                 ulong timeLastVisited = creationTime - kvp.Value.CreationTime;
                 if (!kvp.Value.InvestedIn && kvp.Value.CurrentCreditSupply <=0) // Only deletes expired entries with "OnNewDay" if the "InvestedIn" value inside ShopBuildingData is "false", if the shop has been invested in though, it will not be deleted in this way, only will it be deleted/refreshed when the player enters the expired shop in question, which will generate the gold value based on the amount invested in store, etc.
                 {
-                    if (timeLastVisited >= 1296000) // 15 * 86400 = Number of seconds in 15 days.
+                    if (DaysToReset != 0 && timeLastVisited >= DaysToReset * 86400) // 15 * 86400 = Number of seconds in Requested days.
                     {
                         //Debug.Log("Expired Building Key " + kvp.Key.ToString() + " Detected, Adding to List");
                         expiredKeys.Add(kvp.Key);
                     }
                 }
             }
-
-            foreach (int expired in expiredKeys)
+            
+            foreach (string expired in expiredKeys)
             {
                 //Debug.Log("Removed Expired Building Key " + expired.ToString());
                 ShopBuildingData.Remove(expired);
@@ -351,13 +353,13 @@ namespace LimitedGoldShops
             bool investedIn = false;
             uint amountInvested = 0;
             int shopAttitude = 0;
-            int buildingKey = 0;
+            string buildingKey = "";
             int currentGoldSupply = 0;
             int creditAmt = 0;
 
             creationTime = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToSeconds();
             buildingQuality = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality;
-            buildingKey = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
+            buildingKey = $"{GameManager.Instance.PlayerGPS.CurrentMapID}-{GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey}";
 
             if (GameManager.Instance.PlayerEnterExit.IsPlayerInsideOpenShop)
             {
@@ -389,8 +391,8 @@ namespace LimitedGoldShops
                     {
                         ulong timeLastVisited = creationTime - sd.CreationTime;
                         investedIn = sd.InvestedIn;
-                        if (timeLastVisited >= 1296000)
-                        { // 15 * 86400 = Number of seconds in 15 days.
+                        if (timeLastVisited >= DaysToReset * 86400)
+                        {
                             if (investedIn )
                             {
                                 investedIn = sd.InvestedIn;
@@ -453,7 +455,7 @@ namespace LimitedGoldShops
             int currentRegionIndex = GameManager.Instance.PlayerGPS.CurrentRegionIndex;
             int regionCostAdjust = GameManager.Instance.PlayerEntity.RegionData[currentRegionIndex].PriceAdjustment / 100;
             float varianceMaker = (UnityEngine.Random.Range(1.001f, 2.751f));
-            int buildingQualityMult = 1;
+            int buildingQualityMult;
             if (buildingQuality >= 20)
                 buildingQualityMult = 5;
             else if (buildingQuality >= 10)
@@ -461,7 +463,8 @@ namespace LimitedGoldShops
             else
                 buildingQualityMult = 1;
 
-            return (int)Mathf.Ceil(((buildingQuality / 10 * buildingQualityMult) + (regionCostAdjust + 1)) * ((playerLuck / 2) * varianceMaker));
+            return ((int)Mathf.Ceil(((Mathf.Ceil(buildingQuality / 10f) * buildingQualityMult) + (regionCostAdjust + 1)) * (Mathf.Ceil(playerLuck / 3f) * varianceMaker)))*
+                   GameManager.Instance.PlayerEntity.Level;
         }
 
         public static int InvestedGoldSupplyAmountGenerator(int buildingQuality, uint amountInvested, int shopAttitude)
@@ -488,7 +491,9 @@ namespace LimitedGoldShops
             int regionCostAdjust = GameManager.Instance.PlayerEntity.RegionData[currentRegionIndex].PriceAdjustment / 100;
             float varianceMaker = (UnityEngine.Random.Range(1.201f, 2.751f));
 
-            return (int)Mathf.Ceil(((buildingQuality * 6) + (regionCostAdjust + 1)) * (( UnityEngine.Random.Range(50f,100f)  + playerLuck) * varianceMaker) + investmentPostQuality);
+            return ((int) Mathf.Ceil(((buildingQuality * 6) + (regionCostAdjust + 1)) *
+                       ((UnityEngine.Random.Range(50f, 100f) + playerLuck) * varianceMaker) + investmentPostQuality)) *
+                   GameManager.Instance.PlayerEntity.Level;
         }
     }
 }

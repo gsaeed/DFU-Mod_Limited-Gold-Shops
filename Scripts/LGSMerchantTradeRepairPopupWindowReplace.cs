@@ -116,7 +116,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             int mercSkill = player.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile);
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            string shopBuildingData = $"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}";
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(shopBuildingData, out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -230,7 +231,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void InvestMessageBox_OnGotUserInput(DaggerfallInputMessageBox sender, string input)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -314,7 +315,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void ScamMessageBox_OnGotUserInput(DaggerfallInputMessageBox sender, string input)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -340,7 +341,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void ConfirmInvestment_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
@@ -452,7 +453,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected void ConfirmGettingScammed_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             int playerIntell = player.Stats.LiveIntelligence;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 investedFlag = sd.InvestedIn;
                 shopAttitude = sd.ShopAttitude;
