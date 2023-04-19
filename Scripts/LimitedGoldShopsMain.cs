@@ -86,23 +86,35 @@ namespace LimitedGoldShops
         [Invoke(StateManager.StateTypes.Start, 0)]
         public static void Init(InitParams initParams)
         {
-            mod = initParams.Mod;
-            instance = new GameObject("LimitedGoldShops").AddComponent<LimitedGoldShopsMain>(); // Add script to the scene.
-            mod.SaveDataInterface = instance;
-            if (ShopBuildingData == null) 
+            try
             {
-                ShopBuildingData = new Dictionary<int, ShopData>();
+                mod = initParams.Mod;
+
+                instance = new GameObject("LimitedGoldShops")
+                    .AddComponent<LimitedGoldShopsMain>(); // Add script to the scene.
+                mod.SaveDataInterface = instance;
+                if (ShopBuildingData == null)
+                {
+                    ShopBuildingData = new Dictionary<int, ShopData>();
+                }
+
+                PlayerEnterExit.OnTransitionInterior += GenerateShop_OnTransitionInterior;
+
+                WorldTime.OnNewDay += RemoveExpiredShops_OnNewDay;
+
+                mod.LoadSettingsCallback =
+                    LoadSettings; // To enable use of the "live settings changes" feature in-game.
+
+                // initiates mod message handler
+                mod.MessageReceiver = DFModMessageReceiver;
+
+                mod.IsReady = true;
             }
-            PlayerEnterExit.OnTransitionInterior += GenerateShop_OnTransitionInterior;
+            catch (Exception ex)
+            {
+                Debug.Log($"{ex.StackTrace}");
+            }
 
-            WorldTime.OnNewDay += RemoveExpiredShops_OnNewDay;
-
-            mod.LoadSettingsCallback = LoadSettings; // To enable use of the "live settings changes" feature in-game.
-
-            // initiates mod message handler
-            mod.MessageReceiver = DFModMessageReceiver;
-
-            mod.IsReady = true;
 
         }
 
