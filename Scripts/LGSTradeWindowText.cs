@@ -86,11 +86,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                             (WindowMode == WindowModes.Sell && ItemTypesAccepted.Contains(item.ItemGroup)) ||
                             (WindowMode == WindowModes.SellMagic && item.IsEnchanted)))
                     {
-                        if (FilterUtilities.ItemPassesFilter( filterString, item) && TabPassesFilter(item) &&
+
+                        if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                             (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                                 IsItemWithinShopStandards(item)) &&
-                                (WindowMode == WindowModes.Identify || LimitedGoldShopsMain.CanSellUnidentifiedItems ||
-                                 (!LimitedGoldShopsMain.CanSellUnidentifiedItems && (!item.IsEnchanted || item.IsIdentified))))
+                            (WindowMode == WindowModes.Identify || LimitedGoldShopsMain.CanSellUnidentifiedItems ||
+                             (!LimitedGoldShopsMain.CanSellUnidentifiedItems && (!item.IsEnchanted || item.IsIdentified))))
                             AddLocalItem(item);
                     }
                     else
@@ -125,6 +126,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
 
                     item = remoteItems.GetItem(i);
+
                     if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                         (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                             IsItemWithinShopStandards(item)))
@@ -475,7 +477,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int creditAmt = 0;
             bool ignore = true;
             LimitedGoldShops.ShopData sd;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 shopAttitude = sd.ShopAttitude;
@@ -578,7 +580,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int goldSupply = 0;
             uint investedAmount = 0;
             int creditAmt = 0;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 creditAmt = sd.CurrentCreditSupply;
@@ -608,7 +610,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
             ShopData sd;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 if (sd.CurrentCreditSupply > 0)
                 {
@@ -703,7 +705,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             LimitedGoldShops.ShopData sd;
             int goldSupply = 0;
             int creditAmt = 0;
-            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+            if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
             {
                 goldSupply = sd.CurrentGoldSupply;
                 creditAmt = sd.CurrentCreditSupply;
@@ -751,7 +753,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 int goldSupply = 0;
                 uint investedAmount = 0;
                 int creditAmt = 0;
-                if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue(currentBuildingID, out sd))
+                if (LimitedGoldShops.LimitedGoldShopsMain.ShopBuildingData.TryGetValue($"{GameManager.Instance.PlayerGPS.CurrentMapID}-{currentBuildingID}", out sd))
                 {
                     goldSupply = sd.CurrentGoldSupply;
                     investedAmount = sd.AmountInvested;

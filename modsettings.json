@@ -28,6 +28,15 @@
                     "Description": null,
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Min": 0,
+                    "Max": 365,
+                    "Value": 15,
+                    "Name": "DaysToReset",
+                    "Description": "Number of days to reset store and credit disappears.   Set to Zero for unlimited.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
             ],
             "$version": "v1"
