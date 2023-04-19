@@ -344,6 +344,34 @@ namespace LimitedGoldShops
                 //Debug.Log("Removed Expired Building Key " + expired.ToString());
                 ShopBuildingData.Remove(expired);
             }
+            ModifyShopGold_OnNewDay();
+        }
+
+        protected static void ModifyShopGold_OnNewDay()
+        {
+            ulong creationTime = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToSeconds();
+            var level = GameManager.Instance.PlayerEntity.Level;
+            int buildingQualityMult;
+            foreach (KeyValuePair<string, ShopData> kvp in ShopBuildingData.ToArray())
+            {
+                if (kvp.Value.BuildingQuality >= 16)
+                    buildingQualityMult = 5;
+                else if (kvp.Value.BuildingQuality >= 12)
+                    buildingQualityMult = 3;
+                else if (kvp.Value.BuildingQuality >= 8)
+                    buildingQualityMult = 2;
+                else
+                    buildingQualityMult = 1;
+
+                var gold = kvp.Value.CurrentGoldSupply;
+                var ranGoldAdjustment = UnityEngine.Random.Range(-100 * level * buildingQualityMult, 100 * level * buildingQualityMult);
+                gold += ranGoldAdjustment;
+                if (gold <= 25 * level * buildingQualityMult)
+                    gold = Mathf.Max(Mathf.Abs(ranGoldAdjustment), 25 * level * buildingQualityMult);
+
+                kvp.Value.CurrentGoldSupply = gold;
+                ShopBuildingData[kvp.Key] = kvp.Value;
+            }
         }
 
         protected static void GenerateShop_OnTransitionInterior(PlayerEnterExit.TransitionEventArgs args)
