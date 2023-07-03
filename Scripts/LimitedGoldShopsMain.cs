@@ -60,6 +60,8 @@ namespace LimitedGoldShops
             get { return typeof(LGSaveData); }
         }
 
+        public static int ShowConditionCostReductionPercentage { get; set; }
+
         public object NewSaveData()
         {
             return new LGSaveData
@@ -127,7 +129,7 @@ namespace LimitedGoldShops
         private void Start()
         {
             Debug.Log("Begin mod init: LimitedGoldShops");
-
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Inventory, typeof(AsesinoInfoInventoryWindow));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Trade, typeof(LGSTradeWindowText));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantRepairPopup, typeof(LGSMerchantTradeRepairPopupWindowReplace));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantServicePopup, typeof(LGSMerchantTradeServicePopupWindowReplace));
@@ -148,12 +150,14 @@ namespace LimitedGoldShops
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
             CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
             DaysToReset = (ulong)mod.GetSettings().GetValue<int>("Options", "DaysToReset");
-
+            
 
             CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
             CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
             CheckReligiousItems = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckReligiousItems");
             CheckIngredients = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckIngredients");
+            ShowConditionCostReductionPercentage = mod.GetSettings().GetValue<int>("CheckItemFilter", "ShowConditionCostReductionPercentage");
+
 
             AsesinoTradeWindow.CheckGeneralStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckGeneralStore");
             AsesinoTradeWindow.CheckPawnShops = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckPawnShops");
