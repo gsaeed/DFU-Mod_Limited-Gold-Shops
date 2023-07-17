@@ -37,6 +37,15 @@
                     "Description": "Number of days to reset store and credit disappears.   Set to Zero for unlimited.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 1,
+                    "Max": 150,
+                    "Value": 128,
+                    "Name": "HousePriceMultiplier",
+                    "Description": "House Price Multiplier (Default = 128) - Value will be multiplied by 10 so  multiplier = 1280",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
             ],
             "$version": "v1"
@@ -80,15 +89,6 @@
                     "Description": null,
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
-                },
-                {
-                    "Min": 0,
-                    "Max": 100,
-                    "Value": 0,
-                    "Name": "ShowConditionCostReductionPercentage",
-                    "Description": null,
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
             ],
             "$version": "v1"
