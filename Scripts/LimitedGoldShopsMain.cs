@@ -45,6 +45,8 @@ namespace LimitedGoldShops
         static Mod mod;
         static LimitedGoldShopsMain instance;
         public static bool CanSellUnidentifiedItems { get; set; }
+        public static bool OnlyQualityShopsCanBuyUnidentifiedItems { get; set; }
+        public static int ShopQualityNeededToBuyUnidentifiedItems { get; set; }
         public static ulong DaysToReset { get; set; } = 15;
         public static LimitedGoldShopsMain Instance
         {
@@ -147,6 +149,8 @@ namespace LimitedGoldShops
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
             CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
+            OnlyQualityShopsCanBuyUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "OnlyQualityShopsCanBuyUnidentifiedItems");
+            ShopQualityNeededToBuyUnidentifiedItems = mod.GetSettings().GetValue<int>("Options", "ShopQualityNeededToBuyUnidentifiedItems");
             DaysToReset = (ulong)mod.GetSettings().GetValue<int>("Options", "DaysToReset");
             DaggerfallWorkshop.Game.Banking.DaggerfallBankManager.housePriceMult =
                 (float) (mod.GetSettings().GetValue<int>("Options", "HousePriceMultiplier") * 10);

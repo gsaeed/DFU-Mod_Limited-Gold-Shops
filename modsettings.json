@@ -30,6 +30,22 @@
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 },
                 {
+                    "Value": true,
+                    "Name": "OnlyQualityShopsCanBuyUnidentifiedItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Min": 0,
+                    "Max": 20,
+                    "Value": 12,
+                    "Name": "ShopQualityNeededToBuyUnidentifiedItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
                     "Min": 0,
                     "Max": 365,
                     "Value": 15,
