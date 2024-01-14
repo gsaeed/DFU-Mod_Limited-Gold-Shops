@@ -148,6 +148,7 @@ namespace LimitedGoldShops
         {
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
             ShopStandardsSetting = mod.GetSettings().GetValue<bool>("Options", "ShopStandards");
+            ShopIgnoresStandardsForMagicalItems = mod.GetSettings().GetValue<bool>("Options", "ShopIgnoresStandardsForMagicalItems");
             CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
             OnlyQualityShopsCanBuyUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "OnlyQualityShopsCanBuyUnidentifiedItems");
             ShopQualityNeededToBuyUnidentifiedItems = mod.GetSettings().GetValue<int>("Options", "ShopQualityNeededToBuyUnidentifiedItems");
@@ -174,6 +175,7 @@ namespace LimitedGoldShops
 
         public static float ShopGoldSettingModifier { get; set; }
         public static bool ShopStandardsSetting { get; set; }
+        public static bool ShopIgnoresStandardsForMagicalItems { get; set; }
         public static bool CheckWeaponsArmor { get; set; }
         public static bool CheckClothing { get; set;  }
         public static bool CheckReligiousItems { get; set; }

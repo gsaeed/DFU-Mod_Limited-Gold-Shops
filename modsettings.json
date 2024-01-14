@@ -24,6 +24,13 @@
                 },
                 {
                     "Value": false,
+                    "Name": "ShopIgnoresStandardsForMagicalItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
                     "Name": "CanSellUnidentifiedItems",
                     "Description": null,
                     "$version": "v1",

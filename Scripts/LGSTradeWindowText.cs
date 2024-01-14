@@ -89,7 +89,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
                         if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                             (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
-                                IsItemWithinShopStandards(item)) &&
+                                (IsItemWithinShopStandards(item) || !IsItemWithinShopStandards(item) &&
+                                LimitedGoldShopsMain.ShopIgnoresStandardsForMagicalItems)) &&
                             (WindowMode == WindowModes.Identify ||
                              (!item.IsEnchanted || item.IsEnchanted && item.IsIdentified) ||
                              (LimitedGoldShopsMain.CanSellUnidentifiedItems && item.IsEnchanted && !item.IsIdentified && !LimitedGoldShopsMain.OnlyQualityShopsCanBuyUnidentifiedItems) ||
