@@ -17,10 +17,9 @@
         "Assets/Game/Mods/LimitedGoldShops/modsettings.json",
         "Assets/Game/Mods/LimitedGoldShops/README.md",
         "Assets/Game/Mods/LimitedGoldShops/LimitedGoldShops.dfmod.json",
-        "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/FilterUtilities.cs",
-        "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/AsesinoTradeWindow.cs",
-        "Assets/Game/Mods/DaggerfallPublicMods/InventoryFilter/Scripts/AsesinoInventoryWindow.cs",
-        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryInfoWindow/Scripts/AsesinoInfoTradeWindow.cs"
+        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryInfoWindow/Scripts/AsesinoInfoTradeWindow.cs",
+        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Scripts/FilterUtilities.cs",
+        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryInfoWindow/Scripts/AsesinoInfoInventoryWindow.cs"
     ],
     "ModPreCompile": true
 }
