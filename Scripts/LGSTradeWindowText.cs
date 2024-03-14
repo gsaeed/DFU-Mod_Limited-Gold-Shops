@@ -132,8 +132,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
                     item = remoteItems.GetItem(i);
 
-
-                    if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
+                    if (WindowMode == WindowModes.Sell)
+                        remoteItemsFiltered.Add(item);
+                    else if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                         (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                             IsItemWithinShopStandards(item)))
                         remoteItemsFiltered.Add(item);
