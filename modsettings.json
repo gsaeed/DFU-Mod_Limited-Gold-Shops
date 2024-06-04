@@ -74,6 +74,24 @@
                     "Description": "House Price Multiplier (Default = 128) - Value will be multiplied by 10 so  multiplier = 1280",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 1,
+                    "Max": 20,
+                    "Value": 5,
+                    "Name": "MinimumValueForTrade",
+                    "Description": "This value is multiplied by 100K so a value of 10 is 1M.  ",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 0,
+                    "Max": 100,
+                    "Value": 10,
+                    "Name": "TradeInValuePercent",
+                    "Description": "True value * this percent.  Bank Quality Changes it even more.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
             ],
             "$version": "v1"

@@ -129,7 +129,6 @@ namespace LimitedGoldShops
         private void Start()
         {
             Debug.Log("Begin mod init: LimitedGoldShops");
-            //UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Inventory, typeof(AsesinoInfoInventoryWindow));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Trade, typeof(LGSTradeWindowText));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantRepairPopup, typeof(LGSMerchantTradeRepairPopupWindowReplace));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantServicePopup, typeof(LGSMerchantTradeServicePopupWindowReplace));
@@ -152,7 +151,7 @@ namespace LimitedGoldShops
             CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
             OnlyQualityShopsCanBuyUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "OnlyQualityShopsCanBuyUnidentifiedItems");
             var ShopQuality = mod.GetSettings().GetValue<int>("Options", "ShopQualityNeededToBuyUnidentifiedItems");
-
+            
             if (ShopQuality == 0)
                 ShopQualityNeededToBuyUnidentifiedItems = 0;
             else if (ShopQuality == 1)
@@ -167,6 +166,8 @@ namespace LimitedGoldShops
             DaggerfallWorkshop.Game.Banking.DaggerfallBankManager.housePriceMult =
                 (float) (mod.GetSettings().GetValue<int>("Options", "HousePriceMultiplier") * 10);
 
+            MinimumValueForTrade = mod.GetSettings().GetValue<int>("Options", "MinimumValueForTrade") * 100000;
+            TradeInValuePercent = mod.GetSettings().GetValue<int>("Options", "TradeInValuePercent");
 
             CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
             CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
@@ -183,6 +184,10 @@ namespace LimitedGoldShops
             AsesinoTradeWindow.CheckBookStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckBookStore");
             AsesinoTradeWindow.CheckGemStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckGemStore");
         }
+
+        public static int TradeInValuePercent { get; set; }
+
+        public static int MinimumValueForTrade { get; set; }
 
         public static float ShopGoldSettingModifier { get; set; }
         public static bool ShopStandardsSetting { get; set; }

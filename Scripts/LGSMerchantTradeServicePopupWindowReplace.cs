@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using LimitedGoldShops;
 
@@ -17,13 +20,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         bool investedFlag = false;
         int shopAttitude = 0;
         int investOffer = 0;
-
-
+        List<DaggerfallUnityItem> validTradeItems = new List<DaggerfallUnityItem>();
+        List<DaggerfallUnityItem> orderedValidTradeItems = new List<DaggerfallUnityItem>();
+        private DaggerfallUnityItem selectedItem;
+        private int selectedItemAdjustedValue;
         #region UI Rects
 
         Rect talkButtonRect = new Rect(5, 5, 120, 7);
         Rect investButtonRect = new Rect(5, 14, 120, 7);
-        Rect serviceButtonRect = new Rect(5, 23, 120, 7);
+        Rect serviceButtonRect = new Rect(5, 23, 55, 7);
+        Rect tradeButtonRect = new Rect(65, 23, 55, 7);
         Rect exitButtonRect = new Rect(44, 33, 43, 15);
 
         #endregion
@@ -31,7 +37,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         #region UI Controls
 
         Button investButton = new Button();
-
+        Button tradeButton = new Button();
+        TextLabel tradeLabel = new TextLabel();
         #endregion
 
         #region Fields
@@ -56,7 +63,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             // Load all textures
             LoadTextures();
-
+            selectedItem = null;
             // Create interface panel
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.VerticalAlignment = VerticalAlignment.Middle;
@@ -74,15 +81,41 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             //investButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             investButton.OnMouseClick += InvestButton_OnMouseClick;
 
-            // Service button
-            serviceLabel.Position = new Vector2(0, 1);
-            serviceLabel.ShadowPosition = Vector2.zero;
-            serviceLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            serviceLabel.Text = GetServiceLabelText();
-            serviceButton = DaggerfallUI.AddButton(serviceButtonRect, mainPanel);
-            //serviceButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
-            serviceButton.Components.Add(serviceLabel);
-            serviceButton.OnMouseClick += ServiceButton_OnMouseClick;
+            if (GetServiceLabelText() == TextManager.Instance.GetLocalizedText("serviceBanking"))
+            {
+                serviceLabel.Position = new Vector2(0, 1);
+                serviceLabel.ShadowPosition = Vector2.zero;
+                serviceLabel.Font = DaggerfallUI.DefaultFont;
+                serviceLabel.HorizontalAlignment = HorizontalAlignment.Left;
+                serviceLabel.Text = GetServiceLabelText();
+                serviceButton = DaggerfallUI.AddButton(serviceButtonRect, mainPanel);
+                //serviceButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
+                serviceButton.Components.Add(serviceLabel);
+                serviceButton.OnMouseClick += ServiceButton_OnMouseClick;
+                
+                tradeLabel.Position = new Vector2(0, 1);
+                tradeLabel.ShadowPosition = Vector2.zero;
+                tradeLabel.Font = DaggerfallUI.DefaultFont;
+                tradeLabel.HorizontalAlignment = HorizontalAlignment.Right;
+                tradeLabel.Text = "Trade";
+                tradeButton = DaggerfallUI.AddButton(tradeButtonRect, mainPanel);
+                //serviceButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
+                tradeButton.Components.Add(tradeLabel);
+                tradeButton.OnMouseClick += TradeButton_OnMouseClick;
+            }
+            else
+            {
+                // Service button for banking
+                serviceLabel.Position = new Vector2(0, 1);
+                serviceLabel.ShadowPosition = Vector2.zero;
+                serviceLabel.Font = DaggerfallUI.DefaultFont;
+                serviceLabel.HorizontalAlignment = HorizontalAlignment.Center;
+                serviceLabel.Text = GetServiceLabelText();
+                serviceButton = DaggerfallUI.AddButton(serviceButtonRect, mainPanel);
+                //serviceButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
+                serviceButton.Components.Add(serviceLabel);
+                serviceButton.OnMouseClick += ServiceButton_OnMouseClick;
+            }
 
             // Exit button
             exitButton = DaggerfallUI.AddButton(exitButtonRect, mainPanel);
@@ -90,6 +123,102 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             exitButton.OnMouseClick += ExitButton_OnMouseClick;
 
             NativePanel.Components.Add(mainPanel);
+        }
+
+        private void TradeButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        {
+            var playerEntity = GameManager.Instance.PlayerEntity;
+            DaggerfallUI.Instance.PopToHUD();
+            DaggerfallListPickerWindow validItemPicker = new DaggerfallListPickerWindow(uiManager, uiManager.TopWindow);
+            validItemPicker.OnItemPicked += TradeItem_OnItemPicked;
+            validItemPicker.OnCancel += TradeItem_OnCancel;
+            validTradeItems.Clear(); // Clears the valid item list before every poison apply tool use.
+            int itemCount = playerEntity.Items.Count;
+
+            for (int i = 0; i < playerEntity.Items.Count; i++)
+            {
+                DaggerfallUnityItem item = playerEntity.Items.GetItem(i);
+                if (!item.IsIdentified || item.IsQuestItem || item.ItemGroup == ItemGroups.Transportation ||
+                    item.value < LimitedGoldShopsMain.MinimumValueForTrade)
+                    continue;
+                
+                validTradeItems.Add(item);
+            }
+
+            if (validTradeItems.Count > 0)
+            {
+                orderedValidTradeItems.Clear();
+                foreach (var item in validTradeItems.OrderByDescending(i => i.value))
+                {
+                    orderedValidTradeItems.Add(item);
+                    string itemName = $"{item.LongName}   Value = {item.value.ToString("N0")}";
+                    validItemPicker.ListBox.AddItem(itemName);
+                }
+                uiManager.PushWindow(validItemPicker);
+            }
+            else
+            {
+                DaggerfallUI.MessageBox("You have no valid items with which to trade.");
+            }
+
+        }
+
+        private void TradeItem_OnCancel(DaggerfallPopupWindow sender)
+        {
+            uiManager.PopWindow();
+            DaggerfallUI.MessageBox("Thank you.");
+        }
+
+        private void TradeItem_OnItemPicked(int index, string itemstring)
+        {
+            uiManager.PopWindow();
+            float TradeValueAdjustment = 1f;
+            BuildingDirectory buildingDirectory = GameManager.Instance.StreamingWorld.GetCurrentBuildingDirectory();
+            if (!buildingDirectory)
+                TradeValueAdjustment = 1f ;
+
+            BuildingSummary buildingSummary = default;
+            if (buildingDirectory && !buildingDirectory.GetBuildingSummary(GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey, out buildingSummary))
+                TradeValueAdjustment = 1f ;
+            else
+            {
+                if (buildingSummary.Quality < 4)
+                    TradeValueAdjustment *= 2f;
+                else if (buildingSummary.Quality >= 4 && buildingSummary.Quality <= 7)
+                    TradeValueAdjustment = TradeValueAdjustment * 1.25f;
+                else if (buildingSummary.Quality >= 14 && buildingSummary.Quality <= 17)
+                    TradeValueAdjustment = TradeValueAdjustment * 0.75f;
+                else if (buildingSummary.Quality >= 18 )
+                    TradeValueAdjustment = TradeValueAdjustment * 0.5f;
+                else
+                    TradeValueAdjustment = 1f;
+            }
+
+            selectedItem = orderedValidTradeItems[index];
+            selectedItemAdjustedValue = (int)(selectedItem.value * LimitedGoldShopsMain.TradeInValuePercent / 100f * TradeValueAdjustment);
+            DaggerfallMessageBox acceptTradeMessageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager, DaggerfallUI.UIManager.TopWindow);
+            acceptTradeMessageBox.SetText(
+                $"You want to trade this {selectedItem.LongName}, I can give you {selectedItemAdjustedValue}");
+            acceptTradeMessageBox.OnButtonClick += AcceptTradeMessageBox_OnButtonClick;
+
+            acceptTradeMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+            acceptTradeMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+            acceptTradeMessageBox.Show();
+        }
+
+        private void AcceptTradeMessageBox_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageboxbutton)
+        {
+            uiManager.PopWindow();
+            if (messageboxbutton == DaggerfallMessageBox.MessageBoxButtons.Yes)
+            {
+                GameManager.Instance.PlayerEntity.GoldPieces += selectedItemAdjustedValue;
+                DaggerfallUI.MessageBox(
+                    $"Here are your {selectedItemAdjustedValue} gold pieces for the trade of this {selectedItem.LongName}, thank you for doing business.");
+                GameManager.Instance.PlayerEntity.Items.RemoveOne(selectedItem);
+                selectedItem = null;
+            }
+            else
+                DaggerfallUI.MessageBox("Well, maybe next time.");
         }
 
         protected override void LoadTextures()
