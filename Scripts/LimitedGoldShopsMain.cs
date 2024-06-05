@@ -43,7 +43,28 @@ namespace LimitedGoldShops
     public class LimitedGoldShopsMain : MonoBehaviour, IHasModSaveData
     {
         static Mod mod;
+
         static LimitedGoldShopsMain instance;
+
+        public static int BankRangeMultiplier { get; set; }
+
+        public static int MinimumItemQualityAtBestBank { get; set; }
+
+        public static int MinimumItemQualityAtGoodBank { get; set; }
+
+        public static int MinimumItemQualityAtAverageBank { get; set; }
+
+        public static int TradeInValuePercent { get; set; }
+
+        public static float ShopGoldSettingModifier { get; set; }
+        public static bool ShopStandardsSetting { get; set; }
+        public static bool ShopIgnoresStandardsForMagicalItems { get; set; }
+        public static bool CheckWeaponsArmor { get; set; }
+        public static bool CheckClothing { get; set; }
+        public static bool CheckReligiousItems { get; set; }
+        public static bool CheckIngredients { get; set; }
+
+
         public static bool CanSellUnidentifiedItems { get; set; }
         public static bool OnlyQualityShopsCanBuyUnidentifiedItems { get; set; }
         public static int ShopQualityNeededToBuyUnidentifiedItems { get; set; }
@@ -166,8 +187,11 @@ namespace LimitedGoldShops
             DaggerfallWorkshop.Game.Banking.DaggerfallBankManager.housePriceMult =
                 (float) (mod.GetSettings().GetValue<int>("Options", "HousePriceMultiplier") * 10);
 
-            MinimumValueForTrade = mod.GetSettings().GetValue<int>("Options", "MinimumValueForTrade") * 100000;
-            TradeInValuePercent = mod.GetSettings().GetValue<int>("Options", "TradeInValuePercent");
+            TradeInValuePercent = mod.GetSettings().GetValue<int>("TradeItem", "TradeInValuePercent");
+            MinimumItemQualityAtAverageBank = mod.GetSettings().GetValue<int>("TradeItem", "MinimumItemQualityAtAverageBank");
+            MinimumItemQualityAtGoodBank = mod.GetSettings().GetValue<int>("TradeItem", "MinimumItemQualityAtGoodBank");
+            MinimumItemQualityAtBestBank = mod.GetSettings().GetValue<int>("TradeItem", "MinimumItemQualityAtBestBank");
+            BankRangeMultiplier = mod.GetSettings().GetValue<int>("TradeItem", "BankRangeMultiplier");
 
             CheckWeaponsArmor = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckWeaponsArmor");
             CheckClothing = mod.GetSettings().GetValue<bool>("CheckItemFilter", "CheckClothing");
@@ -184,18 +208,6 @@ namespace LimitedGoldShops
             AsesinoTradeWindow.CheckBookStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckBookStore");
             AsesinoTradeWindow.CheckGemStore = mod.GetSettings().GetValue<bool>("CheckStoreSplitForTabs", "CheckGemStore");
         }
-
-        public static int TradeInValuePercent { get; set; }
-
-        public static int MinimumValueForTrade { get; set; }
-
-        public static float ShopGoldSettingModifier { get; set; }
-        public static bool ShopStandardsSetting { get; set; }
-        public static bool ShopIgnoresStandardsForMagicalItems { get; set; }
-        public static bool CheckWeaponsArmor { get; set; }
-        public static bool CheckClothing { get; set;  }
-        public static bool CheckReligiousItems { get; set; }
-        public static bool CheckIngredients { get; set; }
 
         public static float GetShopGoldSettingModifier()
         {

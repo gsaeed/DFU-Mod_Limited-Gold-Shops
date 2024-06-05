@@ -24,6 +24,25 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         List<DaggerfallUnityItem> orderedValidTradeItems = new List<DaggerfallUnityItem>();
         private DaggerfallUnityItem selectedItem;
         private int selectedItemAdjustedValue;
+        private bool buildingSummaryFound = false;
+        BuildingSummary buildingSummary = default;
+        int[] qualitySpecs = {0, 61, 76, 92, 100};
+        struct minMaxRange
+        {
+            public int Min;
+            public int Max;
+
+            public minMaxRange(int x, int y)
+            {
+                Min = x;
+                Max = y;
+            }
+
+        }
+
+        private Dictionary<int, minMaxRange> BankRanges = new Dictionary<int, minMaxRange>();
+
+
         #region UI Rects
 
         Rect talkButtonRect = new Rect(5, 5, 120, 7);
@@ -70,6 +89,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mainPanel.BackgroundTexture = baseTexture;
             mainPanel.Position = new Vector2(0, 50);
             mainPanel.Size = new Vector2(130, 51);
+            BuildingDirectory buildingDirectory = GameManager.Instance.StreamingWorld.GetCurrentBuildingDirectory();
+
+
+            buildingSummaryFound = true;
+            if (buildingDirectory && !buildingDirectory.GetBuildingSummary(
+                    GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey, out buildingSummary))
+                buildingSummaryFound = false;
 
             // Talk button
             talkButton = DaggerfallUI.AddButton(talkButtonRect, mainPanel);
@@ -81,8 +107,24 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             //investButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             investButton.OnMouseClick += InvestButton_OnMouseClick;
 
-            if (GetServiceLabelText() == TextManager.Instance.GetLocalizedText("serviceBanking"))
+            if (GetServiceLabelText() == TextManager.Instance.GetLocalizedText("serviceBanking")
+                && buildingSummaryFound && buildingSummary.Quality >= 8)
             {
+                BankRanges.Add(8, new minMaxRange(10, 25));
+                BankRanges.Add(9, new minMaxRange(15, 50));
+                BankRanges.Add(10, new minMaxRange(20, 75));
+                BankRanges.Add(11, new minMaxRange(25, 100));
+                BankRanges.Add(12, new minMaxRange(100, 1000));
+                BankRanges.Add(13, new minMaxRange(250, 2000));
+                BankRanges.Add(14, new minMaxRange(500, 3000));
+                BankRanges.Add(15, new minMaxRange(750, 4000));
+                BankRanges.Add(16, new minMaxRange(1000, 5000));
+                BankRanges.Add(17, new minMaxRange(2500, 7500));
+                BankRanges.Add(18, new minMaxRange(3000, 10000));
+                BankRanges.Add(19, new minMaxRange(5000, 25000));
+                BankRanges.Add(20, new minMaxRange(10000, 1000000));
+
+                serviceButtonRect = new Rect(5, 23, 55, 7);
                 serviceLabel.Position = new Vector2(0, 1);
                 serviceLabel.ShadowPosition = Vector2.zero;
                 serviceLabel.Font = DaggerfallUI.DefaultFont;
@@ -106,6 +148,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             else
             {
                 // Service button for banking
+                serviceButtonRect = new Rect(5, 23, 120, 7);
                 serviceLabel.Position = new Vector2(0, 1);
                 serviceLabel.ShadowPosition = Vector2.zero;
                 serviceLabel.Font = DaggerfallUI.DefaultFont;
@@ -125,21 +168,63 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             NativePanel.Components.Add(mainPanel);
         }
 
+        int GetBankQuality()
+        {
+            int n = 0;
+            if (buildingSummary.Quality > 17)
+                n= LimitedGoldShopsMain.MinimumItemQualityAtBestBank;
+            else if (buildingSummary.Quality > 14)
+                n= LimitedGoldShopsMain.MinimumItemQualityAtGoodBank;
+            else
+                n= LimitedGoldShopsMain.MinimumItemQualityAtAverageBank;
+            return n;
+        }
+        string GetItemQualityMinSpec()
+        {
+
+            int n = GetBankQuality();
+            
+            switch (n)
+            {
+                case 0:
+                    return "in any condition";
+                case 1:
+                    return "no worse than slightly used";
+                case 2:
+                    return "in almost new condition";
+                case 3:
+                    return "in new condition only";
+                default:
+                    return "in perfect condition only";
+            }
+        }
+        
         private void TradeButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
+
             var playerEntity = GameManager.Instance.PlayerEntity;
             DaggerfallUI.Instance.PopToHUD();
             DaggerfallListPickerWindow validItemPicker = new DaggerfallListPickerWindow(uiManager, uiManager.TopWindow);
             validItemPicker.OnItemPicked += TradeItem_OnItemPicked;
             validItemPicker.OnCancel += TradeItem_OnCancel;
             validTradeItems.Clear(); // Clears the valid item list before every poison apply tool use.
+
+            var minValue = BankRanges[buildingSummary.Quality].Min * LimitedGoldShopsMain.BankRangeMultiplier;
+            var maxValue = BankRanges[buildingSummary.Quality].Max * LimitedGoldShopsMain.BankRangeMultiplier;
+            //var minValue = BankRanges[buildingSummary.Quality].Min;
+            //var maxValue = BankRanges[buildingSummary.Quality].Max;
+            
+            DaggerfallUI.AddHUDText($"Happy to help you with this, we only accept items of values between {minValue:N0} and {maxValue:N0} that are {GetItemQualityMinSpec()} ");
+
+            
             int itemCount = playerEntity.Items.Count;
 
             for (int i = 0; i < playerEntity.Items.Count; i++)
             {
                 DaggerfallUnityItem item = playerEntity.Items.GetItem(i);
                 if (!item.IsIdentified || item.IsQuestItem || item.ItemGroup == ItemGroups.Transportation ||
-                    item.value < LimitedGoldShopsMain.MinimumValueForTrade)
+                    item.value < minValue || item.value > maxValue
+                    || item.ConditionPercentage < qualitySpecs[GetBankQuality()])
                     continue;
                 
                 validTradeItems.Add(item);
@@ -151,7 +236,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 foreach (var item in validTradeItems.OrderByDescending(i => i.value))
                 {
                     orderedValidTradeItems.Add(item);
-                    string itemName = $"{item.LongName}   Value = {item.value.ToString("N0")}";
+                    string itemName = $"{item.LongName}   Value = {item.value.ToString("N0").PadLeft(60 - item.LongName.Length)}";
                     validItemPicker.ListBox.AddItem(itemName);
                 }
                 uiManager.PushWindow(validItemPicker);
@@ -163,6 +248,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         }
 
+        private bool TradeItemQualityPasses(int itemQuality, int minQuality)
+        {
+            return itemQuality >= minQuality;
+        }
+        
         private void TradeItem_OnCancel(DaggerfallPopupWindow sender)
         {
             uiManager.PopWindow();
@@ -198,7 +288,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             selectedItemAdjustedValue = (int)(selectedItem.value * LimitedGoldShopsMain.TradeInValuePercent / 100f * TradeValueAdjustment);
             DaggerfallMessageBox acceptTradeMessageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager, DaggerfallUI.UIManager.TopWindow);
             acceptTradeMessageBox.SetText(
-                $"You want to trade this {selectedItem.LongName}, I can give you {selectedItemAdjustedValue}");
+                $"You want to trade this {selectedItem.LongName}, my appraiser offers {selectedItemAdjustedValue:N0}.");
             acceptTradeMessageBox.OnButtonClick += AcceptTradeMessageBox_OnButtonClick;
 
             acceptTradeMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
@@ -213,7 +303,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 GameManager.Instance.PlayerEntity.GoldPieces += selectedItemAdjustedValue;
                 DaggerfallUI.MessageBox(
-                    $"Here are your {selectedItemAdjustedValue} gold pieces for the trade of this {selectedItem.LongName}, thank you for doing business.");
+                    $"Here are your {selectedItemAdjustedValue:N0} gold pieces for the trade of this {selectedItem.LongName}, thank you for doing business.");
                 GameManager.Instance.PlayerEntity.Items.RemoveOne(selectedItem);
                 selectedItem = null;
             }

@@ -74,22 +74,72 @@
                     "Description": "House Price Multiplier (Default = 128) - Value will be multiplied by 10 so  multiplier = 1280",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
-                },
+                }
+            ],
+            "$version": "v1"
+        },
+        {
+            "Name": "TradeItem",
+            "Description": null,
+            "IsAdvanced": false,
+            "Keys": [
                 {
-                    "Min": 1,
-                    "Max": 20,
-                    "Value": 5,
-                    "Name": "MinimumValueForTrade",
-                    "Description": "This value is multiplied by 100K so a value of 10 is 1M.  ",
+                    "Min": 0,
+                    "Max": 100,
+                    "Value": 20,
+                    "Name": "TradeInValuePercent",
+                    "Description": "True value * this percent.  Bank Quality Changes it even more.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 },
                 {
-                    "Min": 0,
-                    "Max": 100,
-                    "Value": 10,
-                    "Name": "TradeInValuePercent",
-                    "Description": "True value * this percent.  Bank Quality Changes it even more.",
+                    "Options": [
+                        "Any",
+                        "Slightly Used",
+                        "Almost New",
+                        "New",
+                        "Perfect"
+                    ],
+                    "Value": 1,
+                    "Name": "MinimumItemQualityAtAverageBank",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Options": [
+                        "Any",
+                        "Slightly Used",
+                        "Almost New",
+                        "New",
+                        "Perfect"
+                    ],
+                    "Value": 2,
+                    "Name": "MinimumItemQualityAtGoodBank",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Options": [
+                        "Any",
+                        "Slightly Used",
+                        "Almost New",
+                        "New",
+                        "Perfect"
+                    ],
+                    "Value": 3,
+                    "Name": "MinimumItemQualityAtBestBank",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Min": 100,
+                    "Max": 1000,
+                    "Value": 250,
+                    "Name": "BankRangeMultiplier",
+                    "Description": "",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
