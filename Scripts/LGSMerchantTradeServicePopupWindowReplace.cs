@@ -119,10 +119,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 BankRanges.Add(14, new minMaxRange(500, 3000));
                 BankRanges.Add(15, new minMaxRange(750, 4000));
                 BankRanges.Add(16, new minMaxRange(1000, 5000));
-                BankRanges.Add(17, new minMaxRange(2500, 7500));
-                BankRanges.Add(18, new minMaxRange(3000, 10000));
-                BankRanges.Add(19, new minMaxRange(5000, 25000));
-                BankRanges.Add(20, new minMaxRange(10000, 1000000));
+                BankRanges.Add(17, new minMaxRange(1500, 7500));
+                BankRanges.Add(18, new minMaxRange(2000, 10000));
+                BankRanges.Add(19, new minMaxRange(2500, 25000));
+                BankRanges.Add(20, new minMaxRange(2500, 1000000));
 
                 serviceButtonRect = new Rect(5, 23, 55, 7);
                 serviceLabel.Position = new Vector2(0, 1);
