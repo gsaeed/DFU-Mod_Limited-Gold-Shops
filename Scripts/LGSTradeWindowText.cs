@@ -117,6 +117,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     FilterUtilities.SortMe(SortCriteria,ref localItemsFiltered);
             }
         }
+        public override void OnPush()
+        {
+            base.OnPush();
+            if (!IsSetup)
+                Setup();
+
+            SortCriteria = 3;
+            SetLocalSortButton(SortCriteria);
+        }
+
 
         protected override void FilterRemoteItemsWithoutRepair()
         {
