@@ -74,6 +74,24 @@
                     "Description": "House Price Multiplier (Default = 128) - Value will be multiplied by 10 so  multiplier = 1280",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 0,
+                    "Max": 5,
+                    "Value": 2,
+                    "Name": "SuccessfulCounterOffer",
+                    "Description": "How much to raise/lower Mercantile skill upon Successful bargaining",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": -5,
+                    "Max": 0,
+                    "Value": 0,
+                    "Name": "FailedCounterOffer",
+                    "Description": "How much to raise/lower Mercantile skill upon Failed  bargaining",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
             ],
             "$version": "v1"

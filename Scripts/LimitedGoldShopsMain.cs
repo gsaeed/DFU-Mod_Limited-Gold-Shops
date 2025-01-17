@@ -18,7 +18,9 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using DaggerfallWorkshop.Utility;
 
 
 namespace LimitedGoldShops
@@ -46,6 +48,8 @@ namespace LimitedGoldShops
 
         static LimitedGoldShopsMain instance;
 
+        public static int SuccessfulCounterOffer = 1;
+        public static int FailedCounterOffer = 0; 
         public static int BankRangeMultiplier { get; set; }
 
         public static int MinimumItemQualityAtBestBank { get; set; }
@@ -153,6 +157,7 @@ namespace LimitedGoldShops
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Trade, typeof(LGSTradeWindowText));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantRepairPopup, typeof(LGSMerchantTradeRepairPopupWindowReplace));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.MerchantServicePopup, typeof(LGSMerchantTradeServicePopupWindowReplace));
+            FormulaHelper.RegisterOverride(mod, "CreateStockedDate", (Func<DaggerfallDateTime, PlayerGPS.DiscoveredBuilding, int>)CreateStockedDate);
             Debug.Log("LimitedGoldShops Registered It's Windows");
 
             mod.LoadSettings();
@@ -164,6 +169,20 @@ namespace LimitedGoldShops
             Debug.Log("Finished mod init: LimitedGoldShops");
         }
 
+        private int CreateStockedDate(DaggerfallDateTime date, PlayerGPS.DiscoveredBuilding buildingData)
+        {
+            int stockDate = Mathf.Clamp(28 - buildingData.quality + UnityEngine.Random.Range(-buildingData.quality/2, buildingData.quality/2), 1, 28); 
+            // Create a copy of the date object
+            DaggerfallDateTime dateCopy = new DaggerfallDateTime(date);
+
+            // Raise time on the copy
+            dateCopy.RaiseTime(stockDate * 24 * 60 * 60);
+
+            // Return the calculated stocked date
+            return (dateCopy.Year * 1000) + dateCopy.DayOfYear;
+        }
+
+
         static void LoadSettings(ModSettings modSettings, ModSettingsChange change)
         {
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
@@ -172,7 +191,10 @@ namespace LimitedGoldShops
             CanSellUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "CanSellUnidentifiedItems");
             OnlyQualityShopsCanBuyUnidentifiedItems = mod.GetSettings().GetValue<bool>("Options", "OnlyQualityShopsCanBuyUnidentifiedItems");
             var ShopQuality = mod.GetSettings().GetValue<int>("Options", "ShopQualityNeededToBuyUnidentifiedItems");
-            
+            SuccessfulCounterOffer = mod.GetSettings().GetValue<int>("Options", "SuccessfulCounterOffer");
+            FailedCounterOffer = mod.GetSettings().GetValue<int>("Options", "FailedCounterOffer");
+
+
             if (ShopQuality == 0)
                 ShopQualityNeededToBuyUnidentifiedItems = 0;
             else if (ShopQuality == 1)

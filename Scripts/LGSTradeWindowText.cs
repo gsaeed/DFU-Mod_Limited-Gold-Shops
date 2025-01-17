@@ -9,6 +9,7 @@ using DaggerfallWorkshop.Game.Guilds;
 using LimitedGoldShops;
 using System;
 using System.Collections.Generic;
+using DaggerfallWorkshop.Game.Utility;
 
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
@@ -584,6 +585,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 messageBox.SetTextTokens(tokens, this);
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Counter);
                 messageBox.OnButtonClick += ConfirmTrade_OnButtonClick;
                 uiManager.PushWindow(messageBox);
             }
@@ -643,12 +645,179 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         protected override void ConfirmTrade_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
+            PopWindow();
+            if (messageBoxButton != DaggerfallMessageBox.MessageBoxButtons.Counter)
+            {
+                ConfirmTrade(sender, messageBoxButton, GetTradePrice());
+                return;
+            }
+
+            // Show message box
+            DaggerfallInputMessageBox mb = new DaggerfallInputMessageBox(uiManager, this);
+            mb.SetTextBoxLabel("Counter Offer?");
+            mb.TextPanelDistanceY = 0;
+            mb.InputDistanceX = 15;
+            mb.TextBox.Numeric = true;
+            mb.TextBox.MaxCharacters = 8;
+            mb.TextBox.Text = GetTradePrice().ToString();
+            mb.OnGotUserInput += (inputSender, input) => ConfirmTrade_OnGotUserInput(sender, input, GetTradePrice().ToString());
+            mb.Show();
+
+        }
+
+        private void ConfirmTrade_OnGotUserInput(DaggerfallMessageBox sender, string input, string originalPrice)
+        {
+            string direction = WindowMode == WindowModes.Sell || WindowMode == WindowModes.SellMagic ? "high" : "low";
+            string[] accepts = new string[]
+            {
+                "I reluctantly accept your offer.",
+                "Alright, I'll take it.",
+                "Deal. Let's move forward.",
+                "I accept, but I'm not thrilled about it.",
+                "Fine, you have a deal.",
+                "I guess this will do.",
+                "Alright, let's do it.",
+                "I accept your terms.",
+                "Okay, I'll go with that.",
+                "Sure, let's make it happen.",
+                "I accept, but I hope for better next time.",
+                "Alright, I'll make it up on the next one.",
+                "Deal. Let's get this done.",
+                "I accept, let's proceed.",
+                "Okay, I'll take your offer.",
+                "I accept, but I'm not happy about it.",
+                "Alright, let's finalize this.",
+                "Deal. I'm in.",
+                "I accept, let's move forward.",
+                "Okay, let's do this.",
+                "I accept, but I expect better next time.",
+                "Alright, let's make it happen.",
+                "Deal. Let's get started.",
+                "I accept, let's get this over with.",
+                "Okay, I'll take it for now."
+            };
+            string[] declines = new string[]
+            {
+                "That is an insulting offer.",
+                "I'm sorry, but I can't accept that.",
+                $"No deal, that's too {direction}.",
+                "I can't do it for that price.",
+                "That's not going to work for me.",
+                "I have to decline.",
+                "No, that's not acceptable.",
+                "I can't agree to that.",
+                "Sorry, but I have to refuse.",
+                "That's not enough.",
+                "I can't take that offer.",
+                "No, I can't do it.",
+                $"That's too {direction} for me.",
+                $"I can't accept such a {direction} offer.",
+                "I'm afraid I have to decline.",
+                "No, that's not going to happen.",
+                $"I can't go that {direction}.",
+                "That's not a fair price.",
+                "I have to say no.",
+                "I can't agree to those terms.",
+                "I can't accept that amount.",
+                "No, I can't agree to that.",
+                "That's not going to work.",
+                "I have to turn down your offer."
+            };
+            var offer = int.Parse(input);
+            var originalcost = int.Parse(originalPrice);
+            var difference = 0.0f;
+            var accept = accepts[UnityEngine.Random.Range(0,accepts.Length)];
+            var decline = declines[UnityEngine.Random.Range(0, declines.Length)];
+            var acceptMB = DaggerfallMessageBox.MessageBoxButtons.Yes;
+            var declineMB = DaggerfallMessageBox.MessageBoxButtons.No;
+            var response = accept;
+            var responseMB = acceptMB;
+            if (!GameManager.Instance.PlayerEnterExit.IsPlayerInsideOpenShop)
+            {
+                response = decline;
+                responseMB = declineMB;
+            }
+            else
+            {
+                var quality = GameManager.Instance.PlayerEnterExit.Interior.BuildingData.Quality;
+                var playerMercantile =
+                    GameManager.Instance.PlayerEntity.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile);
+                var player = GameManager.Instance.PlayerEntity;
+                var luck = player.Stats.LiveLuck;
+
+                int merchantMercantileLevel = 5 * (quality - 10) + 50;
+                int merchantPersonalityLevel = 5 * (quality - 10) + 50;
+                int inventoryAging = 0;
+                if (lootTarget != null)
+                    inventoryAging = lootTarget.stockedDate - DaggerfallLoot.CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now);
+                int deltaMercantile;
+                int deltaPersonality;
+
+                if (WindowMode == WindowModes.Sell || WindowMode == WindowModes.SellMagic)
+                {
+                    deltaMercantile = (((100 - merchantMercantileLevel) * 256) / 200 + 128) * (((player.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile)) * 256) / 200 + 128) / 256;
+                    deltaPersonality = (((100 - merchantPersonalityLevel) * 256) / 200 + 128) * ((player.Stats.LivePersonality * 256) / 200 + 128) / 256;
+
+                    difference = (offer - originalcost) / (originalcost * 1f) * 100;
+                }
+                else // buying
+                {
+                    deltaMercantile = ((merchantMercantileLevel * 256) / 200 + 128) * (((100 - (player.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile))) * 256) / 200 + 128) / 256;
+                    deltaPersonality = ((merchantPersonalityLevel * 256) / 200 + 128) * (((100 - player.Stats.LivePersonality) * 256) / 200 + 128) / 256;
+
+                    difference = (originalcost - offer) / (originalcost * 1f) * 100;
+                }
+
+                var willing = ((deltaMercantile /
+                                Mathf.Clamp(player.Skills.GetLiveSkillValue(DFCareer.Skills.Mercantile), 5, 200)) +
+                               (deltaPersonality / Mathf.Clamp(player.Stats.LivePersonality, 5, 200))) / 2;
+
+
+                willing += Mathf.Clamp(UnityEngine.Random.Range(-10, 10) +
+                                       Mathf.Clamp(GameManager.Instance.PlayerEntity.SGroupReputations[1]/10, -10, 10), 0,100);
+                if (Dice100.SuccessRoll(luck / 10))
+                    willing += 40;
+                else if (Dice100.SuccessRoll(luck / 5))
+                    willing += 10;
+                else if (Dice100.SuccessRoll(luck / 5))
+                    willing -= 10;
+                else if (Dice100.SuccessRoll(luck / 10))
+                    willing -= 40;
+
+                willing = Mathf.Clamp(willing, 5, 100);
+                if (willing - difference > 0)
+                {
+                    response = accept;
+                    responseMB = acceptMB;
+                    player.TallySkill(DFCareer.Skills.Mercantile, (short)LimitedGoldShopsMain.SuccessfulCounterOffer);
+                }
+                else
+                {
+                    response = decline;
+                    responseMB = declineMB;
+                    player.TallySkill(DFCareer.Skills.Mercantile, (short)LimitedGoldShopsMain.FailedCounterOffer);
+
+                }
+
+
+            }
+
+            DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+            messageBox.SetText(response, this);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK);
+            messageBox.ClickAnywhereToClose = true;
+            messageBox.OnButtonClick += (sender2, button) => ConfirmTrade(sender, responseMB, int.Parse(input));
+            uiManager.PushWindow(messageBox);
+        }
+
+
+        protected void ConfirmTrade(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton, int tradePrice)
+        {
             bool receivedLetterOfCredit = false;
 
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
                 // Proceed with trade.
-                int tradePrice = GetTradePrice();
                 switch (WindowMode)
                 {
                     case WindowModes.Sell:
@@ -710,9 +879,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 UpdateShopGoldDisplay();
 				Refresh();
             }
-            CloseWindow();
-          //  if (receivedLetterOfCredit)
-            //    DaggerfallUI.MessageBox(TextManager.Instance.GetText(textDatabase, "letterOfCredit"));
+            while (uiManager.TopWindow != this)
+                CloseWindow();
+            if (receivedLetterOfCredit)
+                DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("letterOfCredit"));
+
         }
 
         protected void ConfirmPoorTrade_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
