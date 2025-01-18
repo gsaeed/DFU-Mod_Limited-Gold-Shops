@@ -562,6 +562,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 messageBox.ClickAnywhereToClose = false;
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Counter);
                 messageBox.OnButtonClick += ConfirmPoorTrade_OnButtonClick;
                 uiManager.PushWindow(messageBox);
             }
@@ -667,7 +668,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         }
 
-        private void ConfirmTrade_OnGotUserInput(DaggerfallMessageBox sender, string input, string originalPrice)
+        private void ConfirmTrade_OnGotUserInput(DaggerfallMessageBox sender, string input, string originalPrice, bool poorTrade = false)
         {
             string direction = WindowMode == WindowModes.Sell || WindowMode == WindowModes.SellMagic ? "high" : "low";
             string[] accepts = new string[]
@@ -808,7 +809,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             messageBox.SetText(response, this);
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK);
             messageBox.ClickAnywhereToClose = false;
-            messageBox.OnButtonClick += (sender2, button) => ConfirmTrade(sender, responseMB, int.Parse(input));
+            if (poorTrade)
+                messageBox.OnButtonClick += (sender2, button) => ConfirmPoorTrade(sender, responseMB, int.Parse(input));
+            else
+                messageBox.OnButtonClick += (sender2, button) => ConfirmTrade(sender, responseMB, int.Parse(input));
             uiManager.PushWindow(messageBox);
         }
 
@@ -890,6 +894,28 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         protected void ConfirmPoorTrade_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
+            PopWindow();
+            if (messageBoxButton != DaggerfallMessageBox.MessageBoxButtons.Counter)
+            {
+                ConfirmPoorTrade(sender, messageBoxButton, GetTradePrice());
+                return;
+            }
+
+            // Show message box
+            DaggerfallInputMessageBox mb = new DaggerfallInputMessageBox(uiManager, this);
+            mb.SetTextBoxLabel("Counter Offer?");
+            mb.TextPanelDistanceY = 0;
+            mb.InputDistanceX = 15;
+            mb.TextBox.Numeric = true;
+            mb.ClickAnywhereToClose = false;
+            mb.TextBox.MaxCharacters = 8;
+            mb.TextBox.Text = GetTradePrice().ToString();
+            mb.OnGotUserInput += (inputSender, input) => ConfirmTrade_OnGotUserInput(sender, input, GetTradePrice().ToString(), true);
+            mb.Show();
+        }
+
+        protected void ConfirmPoorTrade(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton, int tradePrice)
+        {
             bool receivedLetterOfCredit = false;
             int currentBuildingID = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingKey;
             LimitedGoldShops.ShopData sd;
@@ -901,6 +927,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 creditAmt = sd.CurrentCreditSupply;
 
             }
+
+            createCreditAmt = (tradePrice - goldSupply);
+
 
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
