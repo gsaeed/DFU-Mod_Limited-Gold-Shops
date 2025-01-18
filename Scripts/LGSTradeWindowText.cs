@@ -559,6 +559,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
                 messageBox.SetTextTokens(tokens, this);
+                messageBox.ClickAnywhereToClose = false;
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
                 messageBox.OnButtonClick += ConfirmPoorTrade_OnButtonClick;
@@ -658,6 +659,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mb.TextPanelDistanceY = 0;
             mb.InputDistanceX = 15;
             mb.TextBox.Numeric = true;
+            mb.ClickAnywhereToClose = false;
             mb.TextBox.MaxCharacters = 8;
             mb.TextBox.Text = GetTradePrice().ToString();
             mb.OnGotUserInput += (inputSender, input) => ConfirmTrade_OnGotUserInput(sender, input, GetTradePrice().ToString());
@@ -805,7 +807,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
             messageBox.SetText(response, this);
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK);
-            messageBox.ClickAnywhereToClose = true;
+            messageBox.ClickAnywhereToClose = false;
             messageBox.OnButtonClick += (sender2, button) => ConfirmTrade(sender, responseMB, int.Parse(input));
             uiManager.PushWindow(messageBox);
         }
