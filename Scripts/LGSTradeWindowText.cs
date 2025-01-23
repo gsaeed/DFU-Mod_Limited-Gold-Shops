@@ -129,34 +129,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         }
 
 
-        protected override void FilterRemoteItemsWithoutRepair()
-        {
-            DaggerfallUnityItem item;
-            // Clear current references
-            remoteItemsFiltered.Clear();
-
-            // Add items to list
-            if (remoteItems != null)
-            {
-                for (int i = 0; i < remoteItems.Count; i++)
-                {
-
-                    item = remoteItems.GetItem(i);
-
-                    if (WindowMode == WindowModes.Sell)
-                        remoteItemsFiltered.Add(item);
-                    else if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
-                        (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
-                            IsItemWithinShopStandards(item)))
-                        remoteItemsFiltered.Add(item);
-                }
-
-                if (remoteItemsFiltered.Count > 0)
-                    FilterUtilities.SortMe(SortCriteria,ref remoteItemsFiltered);
-            }
-
-        }
-        
+       
         public bool IsItemWithinShopStandards(DaggerfallUnityItem itemChecked)
         {
             int baseGoldValue = itemChecked.value;
