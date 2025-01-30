@@ -171,6 +171,8 @@ namespace LimitedGoldShops
 
         private int CreateStockedDate(DaggerfallDateTime date, PlayerGPS.DiscoveredBuilding buildingData)
         {
+            DFRandom.Seed =(uint) buildingData.buildingKey;
+
             int stockDate = Mathf.Clamp(28 - buildingData.quality + UnityEngine.Random.Range(-buildingData.quality/2, buildingData.quality/2), 1, 28); 
             // Create a copy of the date object
             DaggerfallDateTime dateCopy = new DaggerfallDateTime(date);
