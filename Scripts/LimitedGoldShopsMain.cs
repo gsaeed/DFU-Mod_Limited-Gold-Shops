@@ -173,7 +173,7 @@ namespace LimitedGoldShops
         {
             DFRandom.Seed =(uint) buildingData.buildingKey;
 
-            int stockDate = Mathf.Clamp(28 - buildingData.quality + UnityEngine.Random.Range(-buildingData.quality/2, buildingData.quality/2), 1, 28); 
+            int stockDate = Mathf.Clamp(28 - buildingData.quality + DFRandom.random_range_inclusive(-buildingData.quality/2, buildingData.quality/2), 1, 28); 
             // Create a copy of the date object
             DaggerfallDateTime dateCopy = new DaggerfallDateTime(date);
 
