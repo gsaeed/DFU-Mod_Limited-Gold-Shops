@@ -21,6 +21,7 @@ using System.Linq;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Utility;
+using UnityEngine.Localization.SmartFormat.Utilities;
 
 
 namespace LimitedGoldShops
@@ -60,6 +61,9 @@ namespace LimitedGoldShops
 
         public static int TradeInValuePercent { get; set; }
 
+        public static bool UseCustomNumberOfDaysForRestocking { get; set; }
+        public static int MinimumDaysForRestocking { get; set; }
+        public static int MaximumDaysForRestocking { get; set; }
         public static float ShopGoldSettingModifier { get; set; }
         public static bool ShopStandardsSetting { get; set; }
         public static bool ShopIgnoresStandardsForMagicalItems { get; set; }
@@ -172,8 +176,14 @@ namespace LimitedGoldShops
         private int CreateStockedDate(DaggerfallDateTime date, PlayerGPS.DiscoveredBuilding buildingData)
         {
             DFRandom.Seed =(uint) buildingData.buildingKey;
+            
+            int stockDate = Mathf.Clamp(28 - buildingData.quality + DFRandom.random_range_inclusive(-buildingData.quality/2, buildingData.quality/2), 1, 28);
 
-            int stockDate = Mathf.Clamp(28 - buildingData.quality + DFRandom.random_range_inclusive(-buildingData.quality/2, buildingData.quality/2), 1, 28); 
+            if (UseCustomNumberOfDaysForRestocking)
+            {
+                DFRandom.Seed = (uint)buildingData.buildingKey;
+                stockDate = Mathf.Clamp(DFRandom.random_range_inclusive(MinimumDaysForRestocking, MaximumDaysForRestocking), 1, 28);
+            }
             // Create a copy of the date object
             DaggerfallDateTime dateCopy = new DaggerfallDateTime(date);
 
@@ -195,8 +205,16 @@ namespace LimitedGoldShops
             var ShopQuality = mod.GetSettings().GetValue<int>("Options", "ShopQualityNeededToBuyUnidentifiedItems");
             SuccessfulCounterOffer = mod.GetSettings().GetValue<int>("Options", "SuccessfulCounterOffer");
             FailedCounterOffer = mod.GetSettings().GetValue<int>("Options", "FailedCounterOffer");
-
-
+            UseCustomNumberOfDaysForRestocking = mod.GetSettings().GetValue<bool>("Options", "UseCustomNumberOfDaysForRestocking");
+            MinimumDaysForRestocking = mod.GetSettings().GetValue<int>("Options", "MinimumDaysForRestocking");
+            MaximumDaysForRestocking = mod.GetSettings().GetValue<int>("Options", "MaximumDaysForRestocking");
+            if (MinimumDaysForRestocking > MaximumDaysForRestocking)
+            {
+                var temp = MinimumDaysForRestocking;
+                MinimumDaysForRestocking = MaximumDaysForRestocking;
+                MaximumDaysForRestocking = temp;
+            }
+            
             if (ShopQuality == 0)
                 ShopQualityNeededToBuyUnidentifiedItems = 0;
             else if (ShopQuality == 1)

@@ -699,6 +699,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 "That's not going to work.",
                 "I have to turn down your offer."
             };
+            if (string.IsNullOrEmpty(input))
+                return;
+            
             var offer = int.Parse(input);
             var originalcost = int.Parse(originalPrice);
             var difference = 0.0f;

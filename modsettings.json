@@ -92,6 +92,31 @@
                     "Description": "How much to raise/lower Mercantile skill upon Failed  bargaining",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "UseCustomNumberOfDaysForRestocking",
+                    "Description": "if not enabled, 28 - range(-quality/2, quality/2), if enabled, use numbers range below",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Min": 8,
+                    "Max": 30,
+                    "Value": 8,
+                    "Name": "MinimumDaysForRestocking",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 9,
+                    "Max": 50,
+                    "Value": 9,
+                    "Name": "MaximumDaysForRestocking",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 }
             ],
             "$version": "v1"
