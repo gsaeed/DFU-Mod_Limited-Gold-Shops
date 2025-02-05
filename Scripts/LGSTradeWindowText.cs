@@ -10,6 +10,8 @@ using LimitedGoldShops;
 using System;
 using System.Collections.Generic;
 using DaggerfallWorkshop.Game.Utility;
+using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallWorkshop.Game.Questing;
 
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
@@ -132,7 +134,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
        
         public bool IsItemWithinShopStandards(DaggerfallUnityItem itemChecked)
         {
-            int baseGoldValue = itemChecked.value;
+            int baseGoldValue = FormulaHelper.CalculateBaseCost(itemChecked);
 
             if (!(GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.buildingType ==
                 DFLocation.BuildingTypes.GeneralStore ||

@@ -4,9 +4,11 @@ using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using LimitedGoldShops;
+using DaggerfallWorkshop.Game.Questing;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -223,7 +225,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 DaggerfallUnityItem item = playerEntity.Items.GetItem(i);
                 if (!item.IsIdentified || item.IsQuestItem || item.ItemGroup == ItemGroups.Transportation ||
-                    item.value < minValue || item.value > maxValue
+                    FormulaHelper.CalculateBaseCost(item) < minValue || FormulaHelper.CalculateBaseCost(item) > maxValue
                     || item.ConditionPercentage < qualitySpecs[GetBankQuality()])
                     continue;
                 
@@ -233,10 +235,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (validTradeItems.Count > 0)
             {
                 orderedValidTradeItems.Clear();
-                foreach (var item in validTradeItems.OrderByDescending(i => i.value))
+                foreach (var item in validTradeItems.OrderByDescending(i => FormulaHelper.CalculateBaseCost(i)))
                 {
                     orderedValidTradeItems.Add(item);
-                    string itemName = $"{item.LongName}   Value = {item.value.ToString("N0").PadLeft(60 - item.LongName.Length)}";
+                    string itemName = $"{item.LongName}   Value = {FormulaHelper.CalculateBaseCost(item).ToString("N0").PadLeft(60 - item.LongName.Length)}";
                     validItemPicker.ListBox.AddItem(itemName);
                 }
                 uiManager.PushWindow(validItemPicker);
@@ -285,7 +287,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
 
             selectedItem = orderedValidTradeItems[index];
-            selectedItemAdjustedValue = (int)(selectedItem.value * LimitedGoldShopsMain.TradeInValuePercent / 100f * TradeValueAdjustment);
+            selectedItemAdjustedValue = (int)(FormulaHelper.CalculateBaseCost(selectedItem) * LimitedGoldShopsMain.TradeInValuePercent / 100f * TradeValueAdjustment);
             DaggerfallMessageBox acceptTradeMessageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager, DaggerfallUI.UIManager.TopWindow);
             acceptTradeMessageBox.SetText(
                 $"You want to trade this {selectedItem.LongName}, my appraiser offers {selectedItemAdjustedValue:N0}.");
