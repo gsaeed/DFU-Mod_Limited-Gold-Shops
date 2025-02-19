@@ -122,6 +122,103 @@
             "$version": "v1"
         },
         {
+            "Name": "ShopWares",
+            "Description": null,
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Value": true,
+                    "Name": "AllowCustomizationForStocking",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "AlchemistsSellPotionsAndRecipes",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Options": [
+                        "None",
+                        "Worst",
+                        "Poor",
+                        "Average",
+                        "Good",
+                        "Best"
+                    ],
+                    "Value": 0,
+                    "Name": "GemStoreQualityForMagicalItems",
+                    "Description": "Select none to disable",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Options": [
+                        "None",
+                        "Worst",
+                        "Poor",
+                        "Average",
+                        "Good",
+                        "Best"
+                    ],
+                    "Value": 0,
+                    "Name": "ArmorerQualityForMagicalItems",
+                    "Description": "Select none to disable",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Options": [
+                        "None",
+                        "Worst",
+                        "Poor",
+                        "Average",
+                        "Good",
+                        "Best"
+                    ],
+                    "Value": 0,
+                    "Name": "WeaponShopQualityForMagicalItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Options": [
+                        "None",
+                        "Worst",
+                        "Poor",
+                        "Average",
+                        "Good",
+                        "Best"
+                    ],
+                    "Value": 0,
+                    "Name": "PawnShopQualityForMagicalItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                },
+                {
+                    "Options": [
+                        "None",
+                        "Worst",
+                        "Poor",
+                        "Average",
+                        "Good",
+                        "Best"
+                    ],
+                    "Value": 0,
+                    "Name": "GeneralStoreQualityForMagicalItems",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                }
+            ],
+            "$version": "v1"
+        },
+        {
             "Name": "TradeItem",
             "Description": null,
             "IsAdvanced": false,

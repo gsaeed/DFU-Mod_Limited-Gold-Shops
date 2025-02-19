@@ -22,6 +22,7 @@ using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Utility;
 using UnityEngine.Localization.SmartFormat.Utilities;
+using DaggerfallWorkshop.Game.Items;
 
 
 namespace LimitedGoldShops
@@ -71,8 +72,12 @@ namespace LimitedGoldShops
         public static bool CheckClothing { get; set; }
         public static bool CheckReligiousItems { get; set; }
         public static bool CheckIngredients { get; set; }
-
-
+        public static bool AlchemistsSellPotionsAndRecipes { get; set; }
+        public static int GemStoreQualityForMagicalItems { get; set; }
+        public static int ArmorerQualityForMagicalItems { get; set; }
+        public static int WeaponShopQualityForMagicalItems { get; set; }
+        public static int PawnShopQualityForMagicalItems { get; set; }
+        public static int GeneralStoreQualityForMagicalItems { get; set; }
         public static bool CanSellUnidentifiedItems { get; set; }
         public static bool OnlyQualityShopsCanBuyUnidentifiedItems { get; set; }
         public static int ShopQualityNeededToBuyUnidentifiedItems { get; set; }
@@ -172,6 +177,103 @@ namespace LimitedGoldShops
 
             Debug.Log("Finished mod init: LimitedGoldShops");
         }
+        private static ItemCollection AddCustomItems(PlayerGPS.DiscoveredBuilding buildingData, ItemCollection items)
+        {
+            var level = UnityEngine.Random.Range(GameManager.Instance.PlayerEntity.Level,
+                GameManager.Instance.PlayerEntity.Level + 20);
+            if (buildingData.buildingType == DFLocation.BuildingTypes.Alchemist)
+            {
+                for (int n = 0; n < buildingData.quality / 2; n++)
+                {
+                    var item = ItemBuilder.CreateRandomPotion();
+                    if (item != null)
+                        items.AddItem(item);
+                }
+                for (int n = 0; n < buildingData.quality / 3; n++)
+                {
+                    var item = ItemBuilder.CreateRandomRecipe();
+                    if (item != null)
+                        items.AddItem(item);
+                }
+            }
+
+            if (buildingData.buildingType == DFLocation.BuildingTypes.GemStore && buildingData.quality >= GemStoreQualityForMagicalItems)
+            {
+                var quantity = UnityEngine.Random.Range(0, buildingData.quality / 2);
+                for (int n = 0; n < quantity; n++)
+                {
+                    var item = ItemBuilder.CreateRandomMagicItem(level,
+                        GameManager.Instance.PlayerEntity.Gender, Races.Breton, itemGroup: ItemGroups.Gems);
+                    if (item != null)
+                    {
+                        item.IdentifyItem();
+                        items.AddItem(item);
+                    }
+                }
+            }
+
+            if (buildingData.buildingType == DFLocation.BuildingTypes.Armorer && buildingData.quality >= ArmorerQualityForMagicalItems)
+            {
+                var quantity = UnityEngine.Random.Range(0, buildingData.quality / 2);
+                for (int n = 0; n < quantity; n++)
+                {
+                    var item = ItemBuilder.CreateRandomMagicItem(level,
+                        GameManager.Instance.PlayerEntity.Gender, Races.Breton, itemGroup: ItemGroups.Armor);
+                    if (item != null)
+                    {
+                        item.IdentifyItem();
+                        items.AddItem(item);
+                    }
+                }
+            }
+
+            if (buildingData.buildingType == DFLocation.BuildingTypes.WeaponSmith && buildingData.quality >= WeaponShopQualityForMagicalItems)
+            {
+                var quantity = UnityEngine.Random.Range(0, buildingData.quality / 2);
+                for (int n = 0; n < quantity; n++)
+                {
+                    var item = ItemBuilder.CreateRandomMagicItem(level,
+                        GameManager.Instance.PlayerEntity.Gender, Races.Breton, itemGroup: ItemGroups.Weapons);
+                    if (item != null)
+                    {
+                        item.IdentifyItem();
+                        items.AddItem(item);
+                    }
+                }
+            }
+
+            if (buildingData.buildingType == DFLocation.BuildingTypes.PawnShop && buildingData.quality >= PawnShopQualityForMagicalItems)
+            {
+                var quantity = UnityEngine.Random.Range(0, buildingData.quality / 2);
+                for (int n = 0; n < quantity; n++)
+                {
+                    var item = ItemBuilder.CreateRandomMagicItem(level,
+                        GameManager.Instance.PlayerEntity.Gender, Races.Breton);
+                    if (item != null)
+                    {
+                        item.IdentifyItem();
+                        items.AddItem(item);
+                    }
+                }
+            }
+
+            if (buildingData.buildingType == DFLocation.BuildingTypes.GeneralStore && buildingData.quality >= GeneralStoreQualityForMagicalItems)
+            {
+                var quantity = UnityEngine.Random.Range(0, buildingData.quality / 2);
+                for (int n = 0; n < quantity; n++)
+                {
+                    var item = ItemBuilder.CreateRandomMagicItem(level,
+                        GameManager.Instance.PlayerEntity.Gender, Races.Breton);
+                    if (item != null)
+                    {
+                        item.IdentifyItem();
+                        items.AddItem(item);
+                    }
+                }
+            }
+
+            return items;
+        }
 
         private int CreateStockedDate(DaggerfallDateTime date, PlayerGPS.DiscoveredBuilding buildingData)
         {
@@ -194,7 +296,6 @@ namespace LimitedGoldShops
             return (dateCopy.Year * 1000) + dateCopy.DayOfYear;
         }
 
-
         static void LoadSettings(ModSettings modSettings, ModSettingsChange change)
         {
             ShopGoldSettingModifier = mod.GetSettings().GetValue<float>("Options", "ShopGoldModifier");
@@ -214,6 +315,19 @@ namespace LimitedGoldShops
                 MinimumDaysForRestocking = MaximumDaysForRestocking;
                 MaximumDaysForRestocking = temp;
             }
+
+            if (mod.GetSettings().GetValue<bool>("ShopWares", "AllowCustomizationForStocking"))
+                FormulaHelper.RegisterOverride(mod, "AddCustomItems",
+                    (Func<PlayerGPS.DiscoveredBuilding, ItemCollection, ItemCollection>)AddCustomItems);
+            else
+                FormulaHelper.UnRegisterOverride(mod, "AddCustomItems");
+            var shopQualityChoices = new int[] { 99, 0, 4, 8, 14, 18};
+            AlchemistsSellPotionsAndRecipes = mod.GetSettings().GetValue<bool>("ShopWares", "AlchemistsSellPotionsAndRecipes");
+            GemStoreQualityForMagicalItems = shopQualityChoices[mod.GetSettings().GetValue<int>("ShopWares", "GemStoreQualityForMagicalItems")];
+            ArmorerQualityForMagicalItems = shopQualityChoices[mod.GetSettings().GetValue<int>("ShopWares", "ArmorerQualityForMagicalItems")];
+            WeaponShopQualityForMagicalItems = shopQualityChoices[mod.GetSettings().GetValue<int>("ShopWares", "WeaponShopQualityForMagicalItems")];
+            PawnShopQualityForMagicalItems = shopQualityChoices[mod.GetSettings().GetValue<int>("ShopWares", "PawnShopQualityForMagicalItems")];
+            GeneralStoreQualityForMagicalItems = shopQualityChoices[mod.GetSettings().GetValue<int>("ShopWares", "GeneralStoreQualityForMagicalItems")];
             
             if (ShopQuality == 0)
                 ShopQualityNeededToBuyUnidentifiedItems = 0;
