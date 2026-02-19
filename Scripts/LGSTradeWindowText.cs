@@ -90,7 +90,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                             (WindowMode == WindowModes.SellMagic && item.IsEnchanted)))
                     {
 
-                        if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
+                        if (!item.protectedItem && FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                             (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                                 (IsItemWithinShopStandards(item) || !IsItemWithinShopStandards(item) &&
                                 LimitedGoldShopsMain.ShopIgnoresStandardsForMagicalItems)) &&
@@ -107,7 +107,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                         if (GameManager.Instance.PlayerEnterExit.BuildingType == DaggerfallConnect.DFLocation.BuildingTypes.Alchemist &&
                            item.LongName.ToLower().Contains("potion"))
                         {
-                            if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
+                            if (!item.protectedItem && FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                                 (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                                     IsItemWithinShopStandards(item)))
                                 AddLocalItem(item);
