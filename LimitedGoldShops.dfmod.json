@@ -25,5 +25,6 @@
         "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Textures/invInput.png",
         "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Textures/InvButtons RCI.png"
     ],
-    "ModPreCompile": true
+    "ModPreCompile": true,
+    "ModPatch": false
 }

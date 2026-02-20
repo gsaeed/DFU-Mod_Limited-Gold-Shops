@@ -108,23 +108,28 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             investButton = DaggerfallUI.AddButton(investButtonRect, mainPanel);
             //investButton.BackgroundColor = new Color(0.9f, 0.1f, 0.5f, 0.75f);
             investButton.OnMouseClick += InvestButton_OnMouseClick;
-
+            var a = GetServiceLabelText();
+            var b = TextManager.Instance.GetLocalizedText("serviceBanking");
             if (GetServiceLabelText() == TextManager.Instance.GetLocalizedText("serviceBanking")
-                && buildingSummaryFound && buildingSummary.Quality >= 8)
+                && buildingSummaryFound && buildingSummary.Quality >= 4)
             {
-                BankRanges.Add(8, new minMaxRange(10, 25));
-                BankRanges.Add(9, new minMaxRange(15, 50));
-                BankRanges.Add(10, new minMaxRange(20, 75));
+                BankRanges.Add(4, new minMaxRange(1, 10));
+                BankRanges.Add(5, new minMaxRange(1, 10));
+                BankRanges.Add(6, new minMaxRange(1, 20));
+                BankRanges.Add(7, new minMaxRange(1, 20));
+                BankRanges.Add(8, new minMaxRange(10, 50));
+                BankRanges.Add(9, new minMaxRange(10, 50));
+                BankRanges.Add(10, new minMaxRange(10, 50));
                 BankRanges.Add(11, new minMaxRange(25, 100));
                 BankRanges.Add(12, new minMaxRange(100, 1000));
-                BankRanges.Add(13, new minMaxRange(250, 2000));
-                BankRanges.Add(14, new minMaxRange(500, 3000));
-                BankRanges.Add(15, new minMaxRange(750, 4000));
-                BankRanges.Add(16, new minMaxRange(1000, 5000));
-                BankRanges.Add(17, new minMaxRange(1500, 7500));
-                BankRanges.Add(18, new minMaxRange(2000, 10000));
-                BankRanges.Add(19, new minMaxRange(2500, 25000));
-                BankRanges.Add(20, new minMaxRange(2500, 1000000));
+                BankRanges.Add(13, new minMaxRange(100, 2000));
+                BankRanges.Add(14, new minMaxRange(100, 3000));
+                BankRanges.Add(15, new minMaxRange(100, 4000));
+                BankRanges.Add(16, new minMaxRange(100, 5000));
+                BankRanges.Add(17, new minMaxRange(100, 7500));
+                BankRanges.Add(18, new minMaxRange(250, 10000));
+                BankRanges.Add(19, new minMaxRange(250, 25000));
+                BankRanges.Add(20, new minMaxRange(250, 20000000));
 
                 serviceButtonRect = new Rect(5, 23, 55, 7);
                 serviceLabel.Position = new Vector2(0, 1);
@@ -274,20 +279,23 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 TradeValueAdjustment = 1f ;
             else
             {
-                if (buildingSummary.Quality < 4)
+                if (buildingSummary.Quality < 7)
                     TradeValueAdjustment *= 2f;
-                else if (buildingSummary.Quality >= 4 && buildingSummary.Quality <= 7)
-                    TradeValueAdjustment = TradeValueAdjustment * 1.25f;
+                else if (buildingSummary.Quality >= 7 && buildingSummary.Quality <= 7)
+                    TradeValueAdjustment = TradeValueAdjustment * 1.5f;
                 else if (buildingSummary.Quality >= 14 && buildingSummary.Quality <= 17)
-                    TradeValueAdjustment = TradeValueAdjustment * 0.75f;
+                    TradeValueAdjustment = TradeValueAdjustment * 1f;
                 else if (buildingSummary.Quality >= 18 )
-                    TradeValueAdjustment = TradeValueAdjustment * 0.5f;
+                    TradeValueAdjustment = TradeValueAdjustment * 0.75f;
                 else
                     TradeValueAdjustment = 1f;
             }
 
             selectedItem = orderedValidTradeItems[index];
-            selectedItemAdjustedValue = (int)(FormulaHelper.CalculateBaseCost(selectedItem) * LimitedGoldShopsMain.TradeInValuePercent / 100f * TradeValueAdjustment);
+            selectedItemAdjustedValue = (int)(FormulaHelper.CalculateBaseCost(selectedItem)
+                * LimitedGoldShopsMain.TradeInValuePercent / 100f
+                * TradeValueAdjustment
+                * UnityEngine.Mathf.Clamp(selectedItem.ItemTemplate.rarity / 10f, 1f, 100f));
             DaggerfallMessageBox acceptTradeMessageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager, DaggerfallUI.UIManager.TopWindow);
             acceptTradeMessageBox.SetText(
                 $"You want to trade this {selectedItem.LongName}, my appraiser offers {selectedItemAdjustedValue:N0}.");
