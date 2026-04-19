@@ -688,7 +688,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 "That's not enough.",
                 "I can't take that offer.",
                 "No, I can't do it.",
-                $"That's too {direction} for me.",
+                $"That's not {direction} enough for me.",
                 $"I can't accept such a {direction} offer.",
                 "I'm afraid I have to decline.",
                 "No, that's not going to happen.",

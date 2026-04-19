@@ -208,8 +208,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         
         private void TradeButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
-
             var playerEntity = GameManager.Instance.PlayerEntity;
+            var wagonAccess = playerEntity.Items.Contains(ItemGroups.Transportation, (int)Transportation.Small_cart);
+
             DaggerfallUI.Instance.PopToHUD();
             DaggerfallListPickerWindow validItemPicker = new DaggerfallListPickerWindow(uiManager, uiManager.TopWindow);
             validItemPicker.OnItemPicked += TradeItem_OnItemPicked;
@@ -229,12 +230,26 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             for (int i = 0; i < playerEntity.Items.Count; i++)
             {
                 DaggerfallUnityItem item = playerEntity.Items.GetItem(i);
-                if (!item.IsIdentified || item.IsQuestItem || item.ItemGroup == ItemGroups.Transportation ||
+                if (item.protectedItem || !item.IsIdentified || item.IsQuestItem || item.ItemGroup == ItemGroups.Transportation ||
                     FormulaHelper.CalculateBaseCost(item) < minValue || FormulaHelper.CalculateBaseCost(item) > maxValue
                     || item.ConditionPercentage < qualitySpecs[GetBankQuality()])
                     continue;
                 
                 validTradeItems.Add(item);
+            }
+
+            if (wagonAccess)
+            {
+                for (int i = 0; i < playerEntity.WagonItems.Count; i++)
+                {
+                    DaggerfallUnityItem item = playerEntity.WagonItems.GetItem(i);
+                    if (item.protectedItem || !item.IsIdentified || item.IsQuestItem || item.ItemGroup == ItemGroups.Transportation ||
+                        FormulaHelper.CalculateBaseCost(item) < minValue || FormulaHelper.CalculateBaseCost(item) > maxValue
+                        || item.ConditionPercentage < qualitySpecs[GetBankQuality()])
+                        continue;
+
+                    validTradeItems.Add(item);
+                }
             }
 
             if (validTradeItems.Count > 0)
