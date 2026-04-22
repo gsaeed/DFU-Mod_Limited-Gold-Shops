@@ -329,7 +329,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 GameManager.Instance.PlayerEntity.GoldPieces += selectedItemAdjustedValue;
                 DaggerfallUI.MessageBox(
                     $"Here are your {selectedItemAdjustedValue:N0} gold pieces for the trade of this {selectedItem.LongName}, thank you for doing business.");
-                GameManager.Instance.PlayerEntity.Items.RemoveOne(selectedItem);
+                if (GameManager.Instance.PlayerEntity.Items.Contains(selectedItem))
+                    GameManager.Instance.PlayerEntity.Items.RemoveOne(selectedItem);
+                else
+                    GameManager.Instance.PlayerEntity.WagonItems.RemoveOne(selectedItem);
                 selectedItem = null;
             }
             else
