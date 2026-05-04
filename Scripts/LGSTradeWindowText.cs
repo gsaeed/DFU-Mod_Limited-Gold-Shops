@@ -660,12 +660,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 "Sure, let's make it happen.",
                 "I accept, but I hope for better next time.",
                 "Alright, I'll make it up on the next one.",
-                "Deal. Let's get this done.",
+                "Fine. Let's get this done.",
                 "I accept, let's proceed.",
                 "Okay, I'll take your offer.",
                 "I accept, but I'm not happy about it.",
                 "Alright, let's finalize this.",
-                "Deal. I'm in.",
+                "It's a deal then.",
                 "I accept, let's move forward.",
                 "Okay, let's do this.",
                 "I accept, but I expect better next time.",
@@ -679,13 +679,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 "That is an insulting offer.",
                 "I'm sorry, but I can't accept that.",
                 $"No deal, that's too {direction}.",
-                "I can't do it for that price.",
+                "You are joking, right?",
                 "That's not going to work for me.",
                 "I have to decline.",
                 "No, that's not acceptable.",
                 "I can't agree to that.",
                 "Sorry, but I have to refuse.",
-                "That's not enough.",
+                "I can't accept.",
                 "I can't take that offer.",
                 "No, I can't do it.",
                 $"That's not {direction} enough for me.",
@@ -713,6 +713,15 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             var declineMB = DaggerfallMessageBox.MessageBoxButtons.No;
             var response = accept;
             var responseMB = acceptMB;
+            if (WindowMode == WindowModes.Sell || WindowMode == WindowModes.SellMagic)
+            {
+                offer = offer < originalcost ? originalcost : offer;
+            }
+            else
+            {
+                offer = offer > originalcost ? originalcost : offer;
+            }
+
             if (!GameManager.Instance.PlayerEnterExit.IsPlayerInsideOpenShop)
             {
                 response = decline;
@@ -755,7 +764,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
 
                 willing += Mathf.Clamp(UnityEngine.Random.Range(-10, 10) +
-                                       Mathf.Clamp(GameManager.Instance.PlayerEntity.SGroupReputations[1]/10, -10, 10), 0,100);
+                                       Mathf.Clamp(GameManager.Instance.PlayerEntity.SGroupReputations[1] / 10, -10, 10), 0, 100);
                 if (Dice100.SuccessRoll(luck / 10))
                     willing += 40;
                 else if (Dice100.SuccessRoll(luck / 5))
@@ -768,6 +777,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 willing = Mathf.Clamp(willing, 5, 100);
                 if (willing - difference > 0)
                 {
+
                     response = accept;
                     responseMB = acceptMB;
                     player.TallySkill(DFCareer.Skills.Mercantile, (short)LimitedGoldShopsMain.SuccessfulCounterOffer);
@@ -788,9 +798,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK);
             messageBox.ClickAnywhereToClose = false;
             if (poorTrade)
-                messageBox.OnButtonClick += (sender2, button) => ConfirmPoorTrade(sender, responseMB, int.Parse(input));
+                messageBox.OnButtonClick += (sender2, button) => ConfirmPoorTrade(sender, responseMB, offer);
             else
-                messageBox.OnButtonClick += (sender2, button) => ConfirmTrade(sender, responseMB, int.Parse(input));
+                messageBox.OnButtonClick += (sender2, button) => ConfirmTrade(sender, responseMB, offer);
             uiManager.PushWindow(messageBox);
         }
 
