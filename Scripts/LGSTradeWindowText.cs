@@ -90,17 +90,25 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                             (WindowMode == WindowModes.SellMagic && item.IsEnchanted)))
                     {
 
-                        if (!item.protectedItem && FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
+                        if (!item.protectedItem && WindowMode != WindowModes.Repair && WindowMode != WindowModes.Identify && (
+                            FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
                             (!LimitedGoldShopsMain.ShopStandardsSetting || LimitedGoldShopsMain.ShopStandardsSetting &&
                                 (IsItemWithinShopStandards(item) || !IsItemWithinShopStandards(item) &&
                                 LimitedGoldShopsMain.ShopIgnoresStandardsForMagicalItems)) &&
-                            (WindowMode == WindowModes.Identify ||
+                              (WindowMode != WindowModes.Repair && WindowMode != WindowModes.Identify) &&
                              (!item.IsEnchanted || item.IsEnchanted && item.IsIdentified) ||
                              (LimitedGoldShopsMain.CanSellUnidentifiedItems && item.IsEnchanted && !item.IsIdentified && !LimitedGoldShopsMain.OnlyQualityShopsCanBuyUnidentifiedItems) ||
                              (LimitedGoldShopsMain.CanSellUnidentifiedItems && item.IsEnchanted && !item.IsIdentified && LimitedGoldShopsMain.OnlyQualityShopsCanBuyUnidentifiedItems &&
                               GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality >= LimitedGoldShopsMain.ShopQualityNeededToBuyUnidentifiedItems) ||
                              (!LimitedGoldShopsMain.CanSellUnidentifiedItems && (!item.IsEnchanted || item.IsIdentified))))
                             AddLocalItem(item);
+                        else if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
+                                 WindowMode == WindowModes.Identify && item.IsEnchanted && !item.IsIdentified)
+                                AddLocalItem(item);
+                        else if (FilterUtilities.ItemPassesFilter(filterString, item) && TabPassesFilter(item) &&
+                                 WindowMode == WindowModes.Repair)
+                            AddLocalItem(item);
+                        
                     }
                     else
                     {
