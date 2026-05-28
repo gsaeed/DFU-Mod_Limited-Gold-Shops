@@ -23,7 +23,8 @@
         "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Scripts/AsesinoInventoryWindow.cs",
         "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Textures/InvButtons RCI2.png",
         "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Textures/invInput.png",
-        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Textures/InvButtons RCI.png"
+        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Textures/InvButtons RCI.png",
+        "Assets/Game/Mods/DaggerfallPrivateMods/InventoryFilter/Scripts/IngredientEffectManager.cs"
     ],
     "ModPreCompile": true,
     "ModPatch": false
