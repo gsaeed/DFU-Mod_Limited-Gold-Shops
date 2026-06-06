@@ -654,6 +654,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         private void ConfirmTrade_OnGotUserInput(DaggerfallMessageBox sender, string input, string originalPrice, bool poorTrade = false)
         {
             string direction = WindowMode == WindowModes.Sell || WindowMode == WindowModes.SellMagic ? "high" : "low";
+            string reverseDirection = WindowMode == WindowModes.Sell || WindowMode == WindowModes.SellMagic ? "low" : "high";
             string[] accepts = new string[]
             {
                 "I reluctantly accept your offer.",
@@ -696,7 +697,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 "I can't accept.",
                 "I can't take that offer.",
                 "No, I can't do it.",
-                $"That's not {direction} enough for me.",
+                $"That's not {reverseDirection} enough for me.",
                 $"I can't accept such a {direction} offer.",
                 "I'm afraid I have to decline.",
                 "No, that's not going to happen.",
