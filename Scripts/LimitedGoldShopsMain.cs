@@ -315,6 +315,7 @@ namespace LimitedGoldShops
                 MinimumDaysForRestocking = MaximumDaysForRestocking;
                 MaximumDaysForRestocking = temp;
             }
+            LGSTradeWindowText.PopulateCounterOfferWithPrice = mod.GetSettings().GetValue<bool>("Options", "PopulateCounterOfferWithPrice");
 
             if (mod.GetSettings().GetValue<bool>("ShopWares", "AllowCustomizationForStocking"))
                 FormulaHelper.RegisterOverride(mod, "AddCustomItems",

@@ -22,7 +22,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected static TextLabel localTextLabelTwo;
         protected static TextLabel localTextLabelThree;
         protected static int createCreditAmt = 0;
-
+        public static bool PopulateCounterOfferWithPrice = false;
         public LGSTradeWindowText(IUserInterfaceManager uiManager, DaggerfallBaseWindow previous = null) // Added to attempt to circumvent DFU v0.10.25 issue, working now.
             : base(uiManager, previous, WindowModes.Sell, null)
         {
@@ -537,7 +537,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     "I can offer " + tradePrice.ToString() +
                     ".  Would you be willing to take " + goldSupply.ToString() + " in gold and take credit",
                     "for " + (tradePrice - goldSupply).ToString() + "?");
-
+                
                 createCreditAmt = (tradePrice - goldSupply);
 
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
@@ -645,7 +645,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mb.TextBox.Numeric = true;
             mb.ClickAnywhereToClose = false;
             mb.TextBox.MaxCharacters = 8;
-            mb.TextBox.Text = GetTradePrice().ToString();
+            mb.TextBox.Text = PopulateCounterOfferWithPrice ? GetTradePrice().ToString() : "";
             mb.OnGotUserInput += (inputSender, input) => ConfirmTrade_OnGotUserInput(sender, input, GetTradePrice().ToString());
             mb.Show();
 
