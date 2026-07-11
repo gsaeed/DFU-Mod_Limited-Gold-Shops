@@ -212,7 +212,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             var wagonAccess = playerEntity.Items.Contains(ItemGroups.Transportation, (int)Transportation.Small_cart);
 
             DaggerfallUI.Instance.PopToHUD();
-            DaggerfallListPickerWindow validItemPicker = new DaggerfallListPickerWindow(uiManager, uiManager.TopWindow);
+            DaggerfallListPickerWindowWithTitle validItemPicker = new DaggerfallListPickerWindowWithTitle(uiManager, "", uiManager.TopWindow);
             validItemPicker.OnItemPicked += TradeItem_OnItemPicked;
             validItemPicker.OnCancel += TradeItem_OnCancel;
             validTradeItems.Clear(); // Clears the valid item list before every poison apply tool use.
@@ -222,7 +222,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             //var minValue = BankRanges[buildingSummary.Quality].Min;
             //var maxValue = BankRanges[buildingSummary.Quality].Max;
             
-            DaggerfallUI.AddHUDText($"Happy to help you with this, we only accept items of values between {minValue:N0} and {maxValue:N0} that are {GetItemQualityMinSpec()} ");
+            validItemPicker.ChangeTitle($"We look for items valued from {minValue:N0} - {maxValue:N0} {GetItemQualityMinSpec()}  ");
 
             
             int itemCount = playerEntity.Items.Count;
@@ -258,7 +258,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 foreach (var item in validTradeItems.OrderByDescending(i => FormulaHelper.CalculateBaseCost(i)))
                 {
                     orderedValidTradeItems.Add(item);
-                    string itemName = $"{item.LongName}   Value = {FormulaHelper.CalculateBaseCost(item).ToString("N0").PadLeft(60 - item.LongName.Length)}";
+                    //string itemName = $"{item.LongName}   Value = {FormulaHelper.CalculateBaseCost(item).ToString("N0").PadLeft(60 - item.LongName.Length)}";
+                    string itemName = FormulaHelper.CalculateBaseCost(item).ToString("#,##0").PadLeft(15) + $"    {item.LongName}";
                     validItemPicker.ListBox.AddItem(itemName);
                 }
                 uiManager.PushWindow(validItemPicker);
